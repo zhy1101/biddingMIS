@@ -9,4 +9,4 @@ class User(models.Model):
     uPassword  = models.CharField(max_length=10)
 
 class Client(models.Model):
-    cID = models.CharField()
+    cID = models.CharField(max_length=10)
