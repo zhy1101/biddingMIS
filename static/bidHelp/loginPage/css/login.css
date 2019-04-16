@@ -1,0 +1,196 @@
+body{
+	margin: 0;
+	padding: 0;
+	font-family: "微软雅黑";
+	background:url(../img/bg.jpg) center no-repeat fixed;
+	background-size: cover;
+}
+*, :after, :before, legend {
+    box-sizing: border-box;
+}
+a{
+	text-decoration: none;
+}
+
+.header-logo a .logo {
+    display: inline-block;
+    width: 200px;
+    height: 65px;
+    margin: 27px 0 35px 130px;
+    font-size: 0;
+    background: url(../../img/logo.png) no-repeat;
+    background-size: 100%;
+}
+			
+.login-box{
+	/*width: 435px;*/
+	width: 470px;
+   /* padding:0 30px 35px 30px;*/
+    padding:0 0 20px 0;
+    color: #666;
+    border-radius: 4px;
+    background: rgb(245,245,245);
+    /*box-shadow: 1px 1px 4px #767676;*/
+    margin: 85px auto 95px auto;
+    position: relative;
+}
+.login-title{
+	width: 100%;
+	height: 62px;
+	line-height: 62px; 
+	margin-bottom: 35px;
+	font-size: 22px;
+	font-weight: bolder;
+	color: #FFF;
+	/*background:#e35004;*/
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(#87CEFF), to(#76EEC6));
+    background: -webkit-linear-gradient(top, #87CEFF, #76EEC6);
+    background: -moz-linear-gradient(top, #87CEFF, #76EEC6);
+    background: -o-linear-gradient(top, #87CEFF, #76EEC6);
+    background: -ms-linear-gradient(top, #87CEFF, #76EEC6);
+    background: linear-gradient(top, #87CEFF, #76EEC6);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType = 0, startColorstr = #87CEFF, endColorstr = #76EEC6);
+	
+	text-align: center;
+}
+.login-form{
+	width: 330px;
+    margin-right: 52px;
+   /* margin-left: 38px;*/
+   margin-left: 66px;
+}
+.form-item{
+	width: 100%;
+	height: 48px;
+	margin-bottom: 20px;
+	position: relative;
+}
+.user,.pass{
+	margin-bottom: 33px;
+}
+.form-tips{
+	width: 100%;
+	line-height: 16px;
+	font-size: 12px;
+	color: #e35b5a;
+	position: absolute;
+	top: 100%;
+}			
+input{
+	width: 100%;				
+}			
+input:not([type=button]) {
+	height: 48px;
+    /*line-height: 22px;*/
+    padding: 12px 20px;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+    /*color: #000;*/
+    /*#dce4e6*/
+    border:1px solid #a5aaab;
+    border-radius: 3px;
+    outline: 0;
+    font-size: 16px;
+    /*f3f6f8*/
+    background: #fff;
+}			
+.box {	
+  height: 25px;
+}
+.box .rememb{
+  width: 72%;
+  height: 25px;
+  float: left;
+}
+.checkbox-group input {
+    display: none;
+    opacity: 0;
+}
+.checkbox-group input[type=checkbox]+label{
+    line-height: 1;
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    cursor: pointer;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+/*伪类*/
+.checkbox-group input[type=checkbox]:checked+label:before {
+    content: '\2713';
+    background-color:#87CEFF;
+   /*background-color:  #006699;*/
+}
+.checkbox-group input[type=checkbox]:checked+label:before, 
+.checkbox-group input[type=radio]:checked+label:before {
+    text-align: center;
+    color: #fff;
+    border-color: #87CEFF;
+    /*border-color: #006699;*/
+}
+.checkbox-group input[type=checkbox]+label:before{
+    border-radius: 3px;
+}
+.checkbox-group input[type=checkbox]+label:before,
+.checkbox-group input[type=radio]+label:before {
+    line-height: 1;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    content: '';
+    -webkit-transition: all .2s;
+    transition: all .2s;
+    color: #fff;
+    border: 1px solid #dce4e6;
+    background-color: #f3f6f8;
+}			
+.box-fr{
+	width:27%;
+	height: 25px;	
+	float: right;
+}
+.box-fr .btn-link{
+    padding: 0;
+    color: #87CEFF;
+    /*color:  #006699;*/
+    border: none;
+    border-radius: 0;
+}		
+
+.btn a.block, .btn.block {
+    display: block;
+    width: 100%;
+}			
+[type=reset], [type=submit], button, html [type=button] {
+    -webkit-appearance: button;
+}
+.form-button .btn-green {
+    color: #fff;
+    background:#87CEFF;
+   /*background: #006699;*/
+}
+.form-button .btn, .btn a {
+	font-size: 22px;
+    padding: 6px 19px;
+    cursor: pointer;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    outline: 0;
+    font-family:"微软雅黑";
+}
+input::-webkit-input-placeholder{
+	font-size: 16px;
+}
+
+input::-ms-input-placeholder{
+   font-size: 16px;
+   color: #666;
+}
+

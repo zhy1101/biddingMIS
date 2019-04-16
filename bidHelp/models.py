@@ -6,7 +6,7 @@ class User(models.Model):
     uAge = models.IntegerField()
     uGender = models.CharField(max_length=2)
     uKind = models.CharField(max_length=2)
-    uPassword  = models.CharField(max_length=10)
+    uPassword = models.CharField(max_length=10)
 
 class Client(models.Model):
     cID = models.CharField(max_length=10)
