@@ -17,11 +17,12 @@
 		<div class="login-box">
 			<div class="login-title">登录</div>
 			<div class="login-form">
-				<form action="" id="form">
+                {% csrf_token  %}
+				<form action="http://127.0.0.1:8000/login" id="form">
 					<!--账户名-->
 					<div class="form-item user">
 						<div class="form-ctrl">
-							<input type="text" id="userMail" name="username" value="" placeholder="员工号" style="vertical-align:top">
+							<input type="text" id="uID" name="uID" value="" placeholder="员工号" style="vertical-align:top">
 						</div>
 						<div class="form-tips">
 							<span class="error" id="user_error" style="display: none;">员工号不能为空</span>
@@ -30,7 +31,7 @@
 					<!--密码-->
 					<div class="form-item pass">
                         <div class="form-ctrl">
-                            <input type="password" id="userPassword" name="password" value="" placeholder="请输入密码">
+                            <input type="password" id="uPassWord" name="uPassWord" value="" placeholder="请输入密码">
                         </div>
                         <div class="form-tips">
                         	<span class="error" id="pass_error" style="display: none;">密码不能为空</span>
@@ -39,54 +40,12 @@
 
                     <!--登录按钮-->
                     <div class="form-item form-button">
-                        <button type="button" class="btn btn-green block btn-login" onclick="checkForm()">登录 </button>
+                        <button type="submit" class="btn btn-green block btn-login" onclick="checkForm()">登录 </button>
                     </div>
 
 				</form>
 			</div>
 		</div>
-
-		<!--信息提示框-->
-		<div class="dialog-content"></div>
-		<script src="static/bidHelp/loginPage/js/jquery.min.js" type="text/javascript"></script>
-		<script src="static/bidHelp/loginPage/js/dialog.js" type="text/javascript"></script>
-		<script type="text/javascript" type="text/javascript">
-			function checkForm(){
-				var username = document.getElementById("userMail").value;
-		        var password = document.getElementById("userPassword").value;
-		        //是否记住登录密码  默认记住登录密码true
-		        var isCheck = document.getElementsByClassName("isRemberPass")[0].checked;
-		        var isRemberPass = '1';
-		        if(isCheck){
-		        	isRemberPass = '1';
-		        }else{
-		        	isRemberPass = '0';
-		        }
-		        var userError = document.getElementById("user_error");
-		        var passError = document.getElementById("pass_error");
-
-                if (username == "" || username == null || username == undefined) {
-		             userError.style.cssText='display:block;';
-		             passError.style.cssText='display:none;';
-		             return false;
-
-		        } else if (password == "" || password == null || password == undefined) {
-		            passError.style.cssText='display:block;';
-		            userError.style.cssText='display:none;';
-		            return false;
-
-		        }else{
-		        	passError.style.cssText='display:none;';
-		            userError.style.cssText='display:none;';
-
-		    		//ajax后台post登录请求 （假设登录成功）
-		    		dialog($,'success','登陆成功！');
-//					dialog($,'error','登陆失败！');
-		        }
-
-			}
-
-		</script>
 
 	</body>
 </html>

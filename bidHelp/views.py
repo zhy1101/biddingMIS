@@ -2,27 +2,26 @@
 
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,HttpResponseRedirect
-from django.shortcuts import render
+from django.urls import reverse
 import bidHelp.models
 
 def postlogin(request):
     return render(request,'bidHelp/login.html')
 
 def login(request):
-    uID = request.POST['uID']
-    PassWord = request.POST['uPassWord']
-    user = bidHelp.models.User.objects.filter(uID=uID)
+    id = request.GET.get('uID')
+    PassWord = request.GET.get('uPassWord')
+    userSet = bidHelp.models.User.objects.filter(uID=id)
+    user = userSet[0]
     if(user.uPassword == PassWord):
-        session = request.Session()
-        UA = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.13 Safari/537.36"
-        headers = {"User-Agent": UA,
-                  "Referer": "http://www.v2ex.com/signin"}
-        data = {
-            "uID" : uID,
-            "uKind" : user.uKind
-        }
-        response = session.post(url='bidHelp/index.html', headers=headers, data=data)
-        return render(request,'bidHelp/index.html')
+        request.session['uID'] = user.uID
+        return redirect(reverse('bidHelp:index'))
     else:
         return render(request,'bidHelp/login.html')
+
+def index(request):
+    uID = request.session.get('uID')
+    userSet = bidHelp.models.User.objects.filter(uID=uID)
+    user = userSet[0]
+    return render(request, 'bidHelp/index.html', {'uKind': user.uKind})
 
