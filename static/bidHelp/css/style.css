@@ -3004,7 +3004,11 @@ header.navbar {
     .card-columns .card {
       display: inline-block;
       width: 100%;
-      margin-bottom: 0.75rem; } }
+      margin-bottom: 0.75rem; }
+    .card-columns .largecard {
+      display: inline-block;
+      width: 800px;
+      margin-bottom: 0.75rem; }}
 
 .card {
   margin-bottom: 1.5rem; }

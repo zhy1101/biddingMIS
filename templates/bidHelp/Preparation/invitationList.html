@@ -1,0 +1,64 @@
+{% extends "bidHelp/blank.html" %}
+{% block mainPanel %}
+    <div class = "row" style="margin-top: 30px">
+        <div class = "col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                     <strong>待应答邀约</strong>
+                </div>
+                {% if invitationSet%}
+                {% for invite in invitationSet %}
+                <div class="card-block">
+                    <h4>{{ invite.inviteName }}</h4>
+                    <p>{{ invite.inviteTime|date:'Y-M-d'}}</p>
+                    <span>客户：{{ invite.cID.cName }}</span>
+                    <p>邀约内容：{{ invite.inviteContent }}</p>
+                    <span style="color: red">预计开标时间：{{ invite.endTime|date:'Y-M-d' }}&nbsp;&nbsp;&nbsp;截止应答时间：{{ invite.endTime|date:'Y-M-d' }}</span>
+                    <p>回复方式：{{ invite.resWay}}</p>
+                 <hr/>
+                 <button type="button" id="btn-success" class="btn btn-success"
+                         onclick="submitInvitation({{ invite.inviteID }})" >同意</button>
+                 <button type="button" id="btn-danger" class="btn btn-danger" href="http://127.0.0.1:8080/refuseInvitation?inviteID={{ invite.inviteID }}">拒绝</button>
+                </div>
+                {% endfor %}
+                {% else %}
+                    <p>无待应答邀约</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+    <div class = "row" style="margin-top: 30px">
+        <div class = "col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                     <strong>已应答未建组邀约（请尽快建组，进行投标作业）</strong>
+                </div>
+                {% if not projectToCreate %}
+                    <p>无未处理邀约</p>
+                {% else %}
+                {% for project in projectToCreate %}
+                <div class="card-block">
+                    <h4>{{ project.inviteID.inviteName }}</h4>
+                    <p>{{ project.inviteID.inviteTime|date:'Y-M-d'}}</p>
+                    <span>客户：{{ project.inviteID.cID.cName }}</span>
+                    <p>邀约内容：{{ project.inviteID.inviteContent }}</p>
+                    <span style="color: red">预计开标时间：{{ project.inviteID.endTime|date:'Y-M-d' }}</span>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block extraCSS %}
+    <script>
+    function submitInvitation(id){
+          alert(id);
+          var con  = confirm('确认应答该投标邀约吗？');
+           if(con)
+               window.location.href="{% url 'bidHelp:submitInvitation' Iid=id %}"
+    }
+     </script>
+{% endblock extraCSS %}

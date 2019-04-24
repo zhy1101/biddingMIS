@@ -1,0 +1,249 @@
+{% extends "bidHelp/blank.html" %}
+{% block extraCSS %}
+        <sceipt src="/static/bidHelp/assets/js/libs/echarts.min.js"></sceipt>
+        <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>
+{% endblock extraCSS %}
+{% block mainPanel %}
+<div class = "row">
+<div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                客户分布图
+                <div class="card-actions">
+                    <a href="">
+                        <small class="text-muted">完整列表</small>
+                    </a>
+                </div>
+            </div>
+            <div class="card-block" style="height:500px">
+                <!--<div class="chart-wrapper">-->
+                    <div id="china-map" style="width:80%;height:450px;left:0;top:0;"></div>
+                      <!--<canvas id="canvas-1"></canvas>-->
+                <!--</div>-->
+            </div>
+        </div>
+</div>
+{% endblock mainPanel%}
+{% block extraJS %}
+
+    <script src="/static/bidHelp/assets/js/libs/china.js"></script>
+    <script>
+    var myChart = echarts.init(document.getElementById('china-map'));
+   var geoCoordMap = {
+    '上海':[121.45,31.22],
+    '乳源':[113.27,24.77],
+    '昆明':[102.82,24.88],
+    '呼和浩特':[111.62,40.80],
+    '北京':[116.23,40.22],
+    '永吉':[126.49,43.67],
+    '梅河口':[125.71,42.53],
+    '辉南':[126.04,42.68],
+    '辽源':[125.13,42.90],
+    '通化':[125.95,41.72],
+    '长春':[125.28,43.83],
+    '成都':[104.10,30.65],
+    '泸州':[105.43,28.87],
+    '雅安':[103.10,30.06],
+    '天津':[117.30,39.71],
+    '合肥':[117.30,31.79],
+    '临沂':[118.40,35.08],
+    '泰安':[117.13,36.19],
+    '济宁':[116.59,35.40],
+    '济南':[116.75,36.55],
+    '烟台':[121.26,37.49],
+    '东营':[118.58,37.44],
+    '德州':[116.29,37.45],
+    '淄博':[117.86,36.49],
+    '沂源':[118.17,36.18],
+    '费县':[117.97,35.26],
+    '青岛':[120.39,36.30],
+    '运城':[110.99,35.01],
+    '长治':[113.05,36.30],
+    '广州':[113.27,23.15],
+    '深圳':[113.88,22.55],
+    '珠海':[113.29,22.20],
+    '东莞':[113.75,23.02],
+    '中山':[113.39,22.51],
+    '普宁':[116.16,23.29],
+    '桂林':[110.30,25.31],
+    '南京':[118.89,31.32],
+    '南通':[120.85,32.00],
+    '泰州':[119.88,32.31],
+    '常州':[119.59,31.72],
+    '昆山':[120.98,31.38],
+    '徐州':[117.18,34.28],
+    '泰兴':[120.05,32.17],
+    '兴化':[119.85,32.91],
+    '新沂':[118.35,34.37],
+    '无锡':[120.28,31.52],
+    '连云港':[119.17,34.84],
+    '镇江':[119.43,32.13],
+    '苏州':[120.63,31.30],
+    '南昌':[115.94,28.54],
+    '赣州':[115.01,25.86],
+    '抚州':[116.60,28.24],
+    '三河':[117.07,39.98],
+    '张家口':[115.28,40.97],
+    '石家庄':[114.53,38.03],
+    '新郑':[113.74,34.39],
+    '郑州':[113.64,34.72],
+    '宁波':[121.84,29.89],
+    '新昌':[120.90,29.49],
+    '杭州':[120.21,30.20],
+    '湖州':[120.41,30.84],
+    '衢州':[118.87,28.96],
+    '诸暨':[120.23,29.71],
+    '金华':[119.69,29.09],
+    '绍兴':[120.49,30.08],
+    '海口':[110.32,20.02],
+    '宜昌':[111.43,30.53],
+    '武汉':[114.02,30.58],
+    '兰州':[103.71,36.10],
+    '厦门':[118.03,24.48],
+    '贵阳':[106.62,26.67],
+    '沈阳':[123.46,41.80],
+    '大连':[121.52,38.95],
+    '新民':[122.82,41.99],
+    '葫芦岛':[120.86,40.77],
+    '锦州':[121.12,41.11],
+    '重庆':[106.54,29.40],
+    '西安':[108.93,34.23],
+    '大庆':[124.81,46.03],
+    '五常':[127.16,44.93],
+    '哈尔滨':[126.95,45.54],
+    '东阳':[120.24,29.28],
+    '临海':[121.14,28.85],
+    '台州':[121.26,28.64]};
+
+    // 地图散点图数据
+    var data = [
+     {name: '上海', value: 24}, {name: '乳源', value: 1}, {name: '昆明', value: 3},{name:'梅河口',value:1 },
+     {name: '呼和浩特',value: 1}, {name: '北京', value: 30}, {name: '永吉', value:1},{name: '辉南', value:1},
+     {name: '辽源', value:1},{name: '通化', value:2},{name: '长春', value:7},{name: '成都', value:16},
+     {name: '泸州', value:1},{name: '雅安', value:1},{name: '天津', value:9},{name: '合肥', value:6},
+     {name: '临沂', value:3},{name: '泰安', value:1},{name: '济宁', value:2},{name: '济南', value:6},
+     {name: '烟台', value:3},{name: '东营', value:2},{name: '德州', value:1},{name: '淄博', value:1},
+     {name: '沂源', value:1},{name: '费县', value:1},{name: '青岛', value:1},{name: '运城', value:1},
+     {name: '长治', value:1},{name: '广州', value:9},{name: '深圳', value:14},{name: '珠海', value:5},
+     {name: '东莞', value:2},{name: '中山', value:2},{name: '普宁', value:1},{name: '桂林', value:1},
+     {name: '南京', value:7},{name: '南通', value:2},{name: '泰州', value:9},{name: '常州', value:1},
+     {name: '昆山', value:1},{name: '徐州', value:1},{name: '泰兴', value:1},{name: '兴化', value:1},
+     {name: '新沂', value:1},{name: '无锡', value:2},{name: '苏州', value:10},
+     {name: '连云港', value:5},{name: '镇江', value:1},{name: '南昌', value:1},{name: '抚州', value:1},
+     {name: '赣州', value:1},{name: '三河', value:1},{name: '张家口', value:1},
+     {name: '石家庄', value:9},{name: '新郑', value:1},{name: '郑州', value:1},{name: '宁波', value:2},
+     {name: '新昌', value:2},{name: '杭州', value:12},{name: '湖州', value:1},{name: '衢州', value:1},
+     {name: '诸暨', value:1},{name: '金华', value:3},{name: '绍兴', value:1},{name: '海口', value:5},
+     {name: '宜昌', value:2},{name: '武汉', value:4},{name: '兰州', value:2},{name: '厦门', value:2},
+     {name: '贵阳', value:2},{name: '沈阳', value:5},{name: '大连', value:2},{name: '新民', value:1},
+     {name: '葫芦岛', value:1},{name: '锦州', value:1},{name: '重庆', value:7},{name: '西安', value:4},
+     {name: '大庆', value:1},{name: '五常', value:1},{name: '哈尔滨', value:1},{name: '台州', value:1},
+     {name: '临海', value:1},{name: '东阳', value:1}]
+    function convertData(data) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+            var geoCoord = geoCoordMap[data[i].name];
+            if (geoCoord) {
+                res.push({
+                    name: data[i].name,
+                    value: geoCoord.concat(data[i].value)
+                });
+            }
+        }
+        return res;
+    };
+    // 地图散点图配置
+    option = {
+        backgroundColor: '#263238',
+        title: {
+            text: '客户分布图',
+            subtext: '国内主要往来客户分布',
+            x: 'center',
+            textStyle: {
+                color: '#fff'
+            }
+        },
+        tooltip: {
+            trigger: 'item',
+            show: true,
+            formatter: function (params) {
+                return params.name + ' : ' + params.value[2];
+            }
+        },
+        geo: {
+            map: 'china',
+            // left: '10%',
+            roam: true,
+            zoom: '1.5',
+            label: {
+                normal: {
+                    show: false,
+                },
+                emphasis: {
+                    show: false,
+                }
+            },
+            itemStyle: {
+                normal: {
+                    areaColor: 'rgba(0,0,0,0.2)',
+                    borderColor: '#111'
+                },
+                emphasis: {
+                    areaColor: '#20a8d8',
+                    show: false,
+                }
+            }
+        },
+        series: [
+            {
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                symbolSize: function (data) {return data[2]},
+                data: convertData(data),
+                label: {
+                    normal: {
+                        show: false
+                    },
+                    emphasis: {
+                        show:true
+                    }
+                },
+                itemStyle: {
+                    emphasis: {
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }
+                }
+            },
+            {
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                data: convertData(data),
+                symbolSize:8,
+                showEffectOn: 'emphasis',
+                rippleEffect: {
+                    brushType: 'stroke'
+                },
+                hoverAnimation: true,
+                label: {
+                    normal: {
+                        formatter: '{b}',
+                        position: 'right',
+                        show: false
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#f4e925',
+                        shadowBlur: 10,
+                        shadowColor: '#333'
+                    }
+                },
+                zlevel: 1
+            },
+        ]
+    }
+
+    myChart.setOption(option);
+</script>
+{% endblock extraJS %}

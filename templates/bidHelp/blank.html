@@ -15,6 +15,8 @@
 
     <!-- Main styles for this application -->
     <link href="/static/bidHelp/css/style.css" rel="stylesheet">
+     {% block extraCSS %}
+     {% endblock extraCSS %}
 
 </head>
 
@@ -40,7 +42,7 @@
 
     <div class="app-body">
         <div class="sidebar">
-{% if uKind == 'PJ'%}
+{% if request.session.uKind == 'PJ'%}
 		 <nav class="sidebar-nav">
 						<ul class="nav">
 							<li class="nav-item">
@@ -53,10 +55,10 @@
 								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-puzzle"></i> 前期筹备</a>
 								<ul class="nav-dropdown-items">
 									<li class="nav-item">
-										<a class="nav-link" href="components-buttons.html"><i class="icon-puzzle"></i>招标邀约管理</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/toManageInvitation"><i class="icon-puzzle"></i>招标邀约管理</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="components-social-buttons.html"><i class="icon-puzzle"></i> 客户审查</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/toCustomerList"><i class="icon-puzzle"></i> 客户审查</a>
 									</li>
 									<li class="nav-item">
 										<a class="nav-link" href="components-cards.html"><i class="icon-puzzle"></i>项目要求清单管理</a>
@@ -154,7 +156,7 @@
 					</nav>
 {%endif%}
 
-{% if uKind == 'SS'%}
+{% if request.session.uKind == 'SS'%}
 			 <nav class="sidebar-nav">
 						<ul class="nav">
 							<li class="nav-item">
@@ -237,7 +239,7 @@
 					</nav>
 {% endif %}
 
-{% if  uKind  == 'ST' %}
+{% if  request.session.uKind == 'ST' %}
 		 <nav class="sidebar-nav">
 						<ul class="nav">
 							<li class="nav-item">
@@ -259,9 +261,6 @@
 								<ul class="nav-dropdown-items">
 									<li class="nav-item">
 										<a class="nav-link" href="icons-font-awesome.html"><i class="icon-book-open "></i>查询要求清单</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>标书模板管理</a>
 									</li>
 									<li class="nav-item">
 										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>一键生成基础标书文档</a>
@@ -331,9 +330,9 @@
         <main class="main">
             <div class="container-fluid">
                 <div class="animated fadeIn">
-                    { % block mainPanel %}
+                    {% block mainPanel %}
                     这是一个预留模块
-                    { % endblock mainPanel %}
+                    {% endblock mainPanel %}
                 </div>
             </div>
             <!-- /.conainer-fluid -->
@@ -354,6 +353,8 @@ Copyright &copy; 2019.Made By Hanyu Zhu
 
     <!-- GenesisUI main scripts -->
     <script src="/static/bidHelp/js/app.js"></script>
+    {% block extraJS %}
+    {% endblock extraJS %}
 </body>
 
 </html>
