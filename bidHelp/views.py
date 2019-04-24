@@ -4,6 +4,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse,HttpResponseRedirect
 from django.urls import reverse
 import bidHelp.models
+from django.db.models import Q
 
 def postlogin(request):
     return render(request,'bidHelp/login.html')
@@ -30,30 +31,31 @@ def showCustomerDistribution(request):
     return render(request, 'bidHelp/Preparation/CustomerList.html')
 
 def toManageInvitation(request):
-    invitationSet = bidHelp.models.BidInvitation.objects.filter(response__isnull=True)
-    print(len(invitationSet))
+    invitationSet = bidHelp.models.BidInvitation.objects.exclude(Q(bidResponse='Y') | Q(bidResponse='N'))
     cdict = {}
     for invitation in invitationSet:
         customers = bidHelp.models.Customer.objects.filter(cID=invitation.cID.cID)
         cID = str(invitation.cID)
         cdict[cID] = customers[0].cName
-    projectToCreate = bidHelp.models.Project.objects.filter(pState=23)
-    print(len(projectToCreate))
+    projectToCreate = bidHelp.models.Project.objects.filter(pState=23).distinct()
     context = {'invitationSet':invitationSet,'cdict':cdict,'projectToCreate':projectToCreate}
     return render(request,'bidHelp/Preparation/invitationList.html',context)
 
 def submitInvitation(request,Iid):
-    obj = bidHelp.models.BidInvitation.objects.get(inviteID=int(Iid))
-    obj.response = 'Y'
+    Iid = request.GET.get('Iid')
+    obj = bidHelp.models.BidInvitation.objects.get(inviteID=Iid)
+    obj.bidResponse = 'Y'
     obj.save()
-    protentialProject = bidHelp.models.Project(inviteID=Iid,pState=23)
+    state = bidHelp.models.StateParam.objects.filter(paramID=23)
+    protentialProject = bidHelp.models.Project(inviteID=obj,pState=state[0])
     protentialProject.save()
-    return toManageInvitation
+    return toManageInvitation(request)
 
 def refuseInvitation(request,Iid):
-    obj = bidHelp.models.BidInvitation.objects.get(inviteID=int(Iid))
-    obj.response = 'N'
+    Iid = request.GET.get('Iid')
+    obj = bidHelp.models.BidInvitation.objects.get(inviteID=Iid)
+    obj.bidResponse = 'N'
     obj.save()
-    return toManageInvitation
+    return toManageInvitation(request)
 
 

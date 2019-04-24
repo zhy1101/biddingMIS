@@ -54,11 +54,11 @@
 {% endblock %}
 {% block extraCSS %}
     <script>
-    function submitInvitation(id){
-          alert(id);
+    function submitInvitation(invid){
+          var path ='http://127.0.0.1:8000/submitInvitation/?Iid='+invid
           var con  = confirm('确认应答该投标邀约吗？');
            if(con)
-               window.location.href="{% url 'bidHelp:submitInvitation' Iid=id %}"
+               window.location.href=path
     }
      </script>
 {% endblock extraCSS %}

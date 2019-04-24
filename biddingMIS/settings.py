@@ -81,7 +81,6 @@ DATABASES = {
         'NAME': 'bidHelp',
         'USER': 'root',
         'PASSWORD': 'zhy2153411',
-        'HOST': 'localhost',
         'PORT': '3306'
     }
 }
