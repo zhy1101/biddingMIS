@@ -1,0 +1,37 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>查看项目要求清单</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+<div class="col-lg-10">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-align-justify"></i>要求清单目录
+        </div>
+        <div class="card-block">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>项目名称</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pro in projects %}
+                    <tr>
+                        <td>{{ pro.pName }}</td>
+                        <td>{{ pro.startTime }}</td>
+                        <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ pro.pID }}" onclick="window.open(this.href,'_blank',width=200,hight=100,scrollbars=0,resizable=0);return false;">查看</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--/.col-->
+</div>
+{%endblock%}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <link rel="shortcut icon" href="assets/ico/favicon.png"> -->
+    <title>{{ project.pName }}-需求查看</title>
+    <!-- Icons -->
+    <link href="/static/bidHelp/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/bidHelp/css/simple-line-icons.css" rel="stylesheet">
+    <!-- Main styles for this application -->
+    <link href="/static/bidHelp/css/style.css" rel="stylesheet">
+
+</head>
+
+<body class="app flex-row align-items-center">
+    <div class="container">
+        <div class="row justify-content-center"><h4>{{ project.pName }}</h4></div>
+        <div class="row justify-content-center">
+            <div class="col-md-10 mb-6">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#home3" role="tab" aria-controls="home"><i class="icon-notebook"></i>基本信息</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#profile3" role="tab" aria-controls="profile"><i class="icon-wrench "></i>人员/设备</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#messages3" role="tab" aria-controls="messages"><i class="icon-options"></i>其他</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="home3" role="tabpanel">
+                    <p>项目名称 :{{ project.pName }}</p>
+                    <p>开始时间 :{{ project.startTime }}</p>
+                    <p>目前进度 :{{ project.pState.paramContent }}</p>
+                </div>
+                <div class="tab-pane" id="profile3" role="tabpanel">
+                    <p>技术支持：{{ sp_TS.staff.uName }}&nbsp;&nbsp;&nbsp;&nbsp;联系方式：{{ sp_TS.staff.uPhone }}</p>
+                    <p>项目商务支持：{{ sp_BS.staff.uName }}&nbsp;&nbsp;&nbsp;&nbsp;联系方式：{{ sp_BS.staff.uPhone }}</p>
+                    <p>项目外派销售：{{ sp_SS.staff.uName }}&nbsp;&nbsp;&nbsp;&nbsp;联系方式：{{ sp_SS.staff.uPhone }}</p>
+                    <hr/>
+                    <p>项目目标机型：{{ project.aimDevice.deviceID }}-{{ project.aimDevice.deviceName }}</p>
+                    <p>简介：{{ project.aimDevice.functionWord }}</p>
+                </div>
+                <div class="tab-pane" id="messages3" role="tabpanel">
+                   {% for req in reqs %}
+                       <p>{{ req.rName }} : {{ req.rContent }}</p>
+                   {% endfor %}
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- Bootstrap and necessary plugins -->
+	<script src="/static/bidHelp/assets/js/libs/jquery.min.js"></script>
+	<script src="/static/bidHelp/assets/js/libs/tether.min.js"></script>
+	<script src="/static/bidHelp/assets/js/libs/bootstrap.min.js"></script>
+
+</body>
+
+</html>

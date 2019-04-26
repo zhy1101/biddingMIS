@@ -7,7 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" href="/static/bidHelp/css/img/favicon.png">
-    <title>BidHelp投标履约管理系统</title>
+    {% block pageTitle  %}
+     <title>BidHelp投标履约管理系统</title>
+    {% endblock pageTitle%}
 
     <!-- Icons -->
     <link href="/static/bidHelp/css/font-awesome.min.css" rel="stylesheet">
@@ -61,7 +63,7 @@
 										<a class="nav-link" href="http://127.0.0.1:8000/toCustomerList"><i class="icon-puzzle"></i> 客户审查</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="components-cards.html"><i class="icon-puzzle"></i>项目要求清单管理</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminProjectRequest/1/1"><i class="icon-puzzle"></i>项目要求清单管理</a>
 									</li>
 								</ul>
 							</li>
@@ -69,13 +71,7 @@
 								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-book-open "></i>投标作业</a>
 								<ul class="nav-dropdown-items">
 									<li class="nav-item">
-										<a class="nav-link" href="icons-font-awesome.html"><i class="icon-book-open "></i>查询要求清单</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>标书模板管理</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>一键生成基础标书文档</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/tofastBidDocPage"><i class="icon-book-open "></i>一键生成基础标书文档</a>
 									</li>
 									<li class="nav-item">
 										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>投标保函管理</a>
@@ -177,7 +173,7 @@
 								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-book-open "></i>投标作业</a>
 								<ul class="nav-dropdown-items">
 									<li class="nav-item">
-										<a class="nav-link" href="icons-font-awesome.html"><i class="icon-book-open "></i>查询要求清单</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/showBidRequestforST/{{ session.uID }}"><i class="icon-book-open "></i>查询要求清单</a>
 									</li>
 									<li class="nav-item">
 										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>标价预测</a>
@@ -239,7 +235,7 @@
 					</nav>
 {% endif %}
 
-{% if  request.session.uKind == 'ST' %}
+{% if  request.session.uKind == 'TS' or request.session.uKind == 'BS' %}
 		 <nav class="sidebar-nav">
 						<ul class="nav">
 							<li class="nav-item">
@@ -260,7 +256,7 @@
 								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-book-open "></i>投标作业</a>
 								<ul class="nav-dropdown-items">
 									<li class="nav-item">
-										<a class="nav-link" href="icons-font-awesome.html"><i class="icon-book-open "></i>查询要求清单</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/showBidRequestforST/{{ session.uID }}"><i class="icon-book-open "></i>查询要求清单</a>
 									</li>
 									<li class="nav-item">
 										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>一键生成基础标书文档</a>
@@ -322,6 +318,7 @@
 								</ul>
 							</li>
 						</ul>
+                      </li></ul>
 					</nav>
 {%endif%}
         </div>

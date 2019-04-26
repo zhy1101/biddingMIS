@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <link rel="shortcut icon" href="assets/ico/favicon.png"> -->
+    <title>{{ project.inviteID.inviteName }}-需求填写</title>
+    <!-- Icons -->
+    <link href="/static/bidHelp/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/bidHelp/css/simple-line-icons.css" rel="stylesheet">
+    <!-- Main styles for this application -->
+    <link href="/static/bidHelp/css/style.css" rel="stylesheet">
+
+</head>
+
+<body class="app flex-row align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <h1>{{ project.inviteID.inviteName }} -- 项目要求</h1>
+            <form style="width: 100%" class="row" action="http://127.0.0.1:8000/AddProjectRequest" method="post">
+                <input type="hidden" name="pID" value="{{ project.pID }}">
+            <div class="col-md-6" style="margin-top: 30px;">
+                <div class="card mx-2">
+                    <div class="card-block p-2">
+                        <p class="text-muted">必要信息部分</p>
+                        <div class="input-group mb-1">
+                            <span class="input-group-addon">客户名</span>
+                            <input type="text" class="form-control" placeholder="客户名" value="{{ project.inviteID.cID.cName }}" disabled="">
+                        </div>
+                        <div class="input-group mb-1">
+                            <span class="input-group-addon">客户英文名称</span>
+                            <input type="text" class="form-control" value="{{ project.inviteID.cID.cEnglishName }}" disabled="">
+                        </div>
+                        <div class="input-group mb-1">
+                            <span class="input-group-addon">项目名称</span>
+                            <input type="text" class="form-control" name="pName">
+                        </div>
+                        <div class="input-group mb-1">
+                            <span class="input-group-addon">开标时间</input>
+                            </span>
+                            <input type="text" class="form-control" placeholder="格式 yyyy-mm-dd" name="bidStartTime">
+                        </div>
+                        <div class="input-group mb-1">
+                            <span class="input-group-addon">开标地点</span>
+                            <input type="text" class="form-control" name="bidPlace">
+                        </div>
+                        <div class="input-group mb-1">
+                            <span class="input-group-addon">保证金金额</span>
+                            <input type="text" class="form-control" name="bankPrice">
+                        </div>
+                        <div class="input-group mb-1">
+                            <span class="input-group-addon">标书份数要求</span>
+                            <input type="text" class="form-control" placeholder="x正x副" name="numRes">
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3 form-control-label">是否邮寄</label>
+                        <div class="col-md-9">
+                            <label class="radio-inline" for="inline-radio1">
+                                <input type="radio" id="inline-radio1" name="isExpress" value="1">是
+                            </label>
+                            <label class="radio-inline" for="inline-radio2">
+                                <input type="radio" id="inline-radio2" name="isExpress" value="0">否
+                            </label>
+                        </div>
+                       </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="margin-top: 30px;">
+                <div class="card mx-2">
+                    <div class="card-block p-2">
+                        <p class="text-muted">人员信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="">员工信息参考</a></p>
+                        <div class="form-group row">
+                            <label class="col-md-3 form-control-label" for="select">技术支持</label>
+                            <div class="col-md-9">
+                                <select id="select" name="ST1_id" class="form-control">
+                                    <option value="0">请选择</option>
+                                    {% for ST1 in ST1List %}
+                                    <option value="{{ ST1.id }}">{{ ST1.uName }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3 form-control-label" for="select">商务支持</label>
+                            <div class="col-md-9">
+                                <select id="select" name="ST2_id" class="form-control">
+                                    <option value="0">请选择</option>
+                                    {% for ST2 in ST2List %}
+                                    <option value="{{ ST2.id }}">{{ ST2.uName }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3 form-control-label" for="select">外派销售</label>
+                            <div class="col-md-9">
+                                <select id="select" name="SS_id" class="form-control">
+                                    <option value="0">请选择</option>
+                                    {% for SS in SSList %}
+                                    <option value="{{ SS.id }}">{{ SS.uName }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <p class="text-muted">设备信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="">设备信息参考</a></p>
+                        <div class="form-group row">
+                            <label class="col-md-3 form-control-label" for="select">目标机型</label>
+                            <div class="col-md-9">
+                                <select id="select" name="device_id" class="form-control">
+                                    <option value="0">请选择</option>
+                                    {% for de in deviceList %}
+                                    <option value="{{ de.id }}">{{ de.deviceID }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3 form-control-label" for="text-input">采购数量</label>
+                            <div class="col-md-9">
+                                <input type="text" id="text-input" name="quantity" class="form-control" placeholder="请直接填写数字">
+                            </div>
+                        </div>
+
+                        <p class="text-muted">其他细节信息</p>
+                        <div class="form-group row">
+                            <label class="col-md-3 form-control-label" for="textarea-input">详细要求</label>
+                            <div class="col-md-9">
+                                <textarea id="textarea-input" name="detail" rows="7" class="form-control" placeholder="请详细罗列注意事项"></textarea>
+                            </div>
+                        </div>
+
+                        <input type="submit" class="btn btn-block btn-success">确认提交清单</input>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    </div>
+    <!-- Bootstrap and necessary plugins -->
+	<script src="/static/bidHelp/assets/js/libs/jquery.min.js"></script>
+	<script src="/static/bidHelp/assets/js/libs/tether.min.js"></script>
+	<script src="/static/bidHelp/assets/js/libs/bootstrap.min.js"></script>
+
+
+</body>
+
+</html>

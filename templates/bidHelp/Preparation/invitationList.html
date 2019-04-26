@@ -18,7 +18,7 @@
                  <hr/>
                  <button type="button" id="btn-success" class="btn btn-success"
                          onclick="submitInvitation({{ invite.inviteID }})" >同意</button>
-                 <button type="button" id="btn-danger" class="btn btn-danger" href="http://127.0.0.1:8080/refuseInvitation?inviteID={{ invite.inviteID }}">拒绝</button>
+                 <button type="button" id="btn-danger" class="btn btn-danger" onclick="refuseInvitation({{ invite.inviteID }})">拒绝</button>
                 </div>
                 {% endfor %}
                 {% else %}
@@ -57,6 +57,12 @@
     function submitInvitation(invid){
           var path ='http://127.0.0.1:8000/submitInvitation/?Iid='+invid
           var con  = confirm('确认应答该投标邀约吗？');
+           if(con)
+               window.location.href=path
+    }
+    function refuseInvitation(invid){
+          var path ='http://127.0.0.1:8000/refuseInvitation/?Iid='+invid
+          var con  = confirm('确认拒绝该投标邀约吗？');
            if(con)
                window.location.href=path
     }

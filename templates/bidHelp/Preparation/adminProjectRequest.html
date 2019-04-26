@@ -1,0 +1,95 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>项目要求列表</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+<div class="col-lg-6">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-align-justify"></i> 待填写要求列表
+        </div>
+        <div class="card-block">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>项目名称</th>
+                        <th>预计开标时间</th>
+                        <th>招标文件</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pro in noListProject %}
+                    <tr>
+                        <td>{{ pro.inviteID.inviteName }}</td>
+                        <td>{{ pro.inviteID.preBidTime }}</td>
+                        <td><a href="{{ pro.bidDocPath }}">下载</a></td>
+                        <td><a href="http://127.0.0.1:8000/posttoAddProjectRequest/{{ pro.pID }}" target="_blank">填写需求</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+                {%for npp in nplistrange%}
+                    {%if npp == npIndex%}
+                        <li class="page-item active">
+                            <a class="page-link" href="#">{{ npIndex }}</a>
+                        </li>
+                    {%else%}
+                        <li class="page-item"><a class="page-link" href="#">{{ npp }}</a></li>
+                    {%endif%}
+                {%endfor%}
+                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--/.col-->
+
+<div class="col-lg-6">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-align-justify"></i>历史记录列表
+        </div>
+        <div class="card-block">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>项目名称</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rpro in readyProject %}
+                    <tr>
+                        <td>{{ rpro.pName }}</td>
+                        <td>{{ rpro.startTime }}</td>
+                        <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ rpro.pID }}" onclick="window.open(this.href,'_blank',width=200,hight=100,scrollbars=0,resizable=0);return false;">查看</a></td>
+                        <td><a href="">修改</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+             <ul class="pagination">
+                <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+                {%for rpp in rplistrange%}
+                    {%if rpp == rpIndex%}
+                        <li class="page-item active">
+                            <a class="page-link" href="#">{{ rpIndex }}</a>
+                        </li>
+                    {%else%}
+                        <li class="page-item"><a class="page-link" href="#">{{ rpp }}</a></li>
+                    {%endif%}
+                {%endfor%}
+                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--/.col-->
+</div>
+{%endblock%}
