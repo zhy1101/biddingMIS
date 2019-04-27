@@ -7,6 +7,13 @@ import bidHelp.models
 from django.db.models import Q
 from django.core.paginator import Paginator
 import datetime
+import os
+from django.http import StreamingHttpResponse
+from django.utils.translation import ugettext_lazy as _
+from rest_framework import status
+from docxtpl import DocxTemplate
+from skimage import io,data
+
 
 def postlogin(request):
     return render(request,'bidHelp/login.html')
@@ -154,3 +161,54 @@ def showBidRequestforST(request,uID):
 def tofastBidDocPage(request):
     noDocProjects = bidHelp.models.Project.objects.filter(pState_id=1)
     return render(request,'bidHelp/Bidding/fastBidDocPage.html',{"noDocProjects":noDocProjects})
+
+#生成标书文件
+def read_file(file_name, size):
+    with open(file_name, mode='rb') as fp:
+        while True:
+            c = fp.read(size)
+            if c:
+                yield c
+            else:
+                break
+
+def download_report(request,pID):
+    p = bidHelp.models.Project.objects.get(pID=pID)
+    try:
+        data = {
+            'clientName': p.inviteID.cID.cName,
+            'pName':p.pName,
+            'SSName':p.staff_project_set.get(job='SS').staff.uName,
+            'bidTime': p.bidrequest_set.get(rName='开标时间').rContent
+        }
+    except Exception as e:
+        return HttpResponse(_("生成文件错误"), status=status.HTTP_400_BAD_REQUEST)
+        # 删除生成的报告
+    filenames=['01投标函.docx','02开标一览表.docx','03投标分项报价表.docx','04法人授权书.docx',
+              '05投标人资格证明.docx','06制造商资格证明.docx','07售后服务说明.docx','08营业执照副本.jpg']
+    filepath = 'd:\\' + p.pName+ ' '+datetime.datetime.now().strftime('%Y-%m-%d')
+    if(os.path.exists(filepath)):
+        filepath = filepath
+    else:
+        os.mkdir(filepath)
+    for num in range(1,9):
+        filename = filenames[num-1]        # 所生成的word文档需要以.docx结尾，文档格式需要
+        if (num<8):
+            tn = 'B0'+str(num)+'.docx'
+            template_path =os.path.join(os.getcwd(),tn)
+            template = DocxTemplate(template_path)
+            template.render(context=data)
+            template.save(os.path.join(filepath,filename))
+        else:
+            img = io.imread(os.path.join(os.getcwd(), 'timg.jpg'))
+            io.imsave(os.path.join(filepath,filename), img)
+     # time.sleep(10)
+    p.bidDocPath = 'd:\\'+p.pName
+    state = bidHelp.models.StateParam.objects.get(paramID=2)
+    p.pState = state
+    p.save()
+    process = bidHelp.models.ProjectProccess.objects.create(pID=p,proccess=state,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return tofastBidDocPage(request)
+
+
+
