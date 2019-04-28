@@ -1,0 +1,190 @@
+{% extends "bidHelp/blank.html" %}
+{% block extraCSS %}
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts-all-3.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+{% endblock extraCSS %}
+{% block mainPanel %}
+<div class = "row">
+<div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                填写预测参数
+            </div>
+            <div class="card-block" >
+                <form >
+                <div class="row">
+                    <div class="form-group col-sm-4">
+                        <label for="model">预测方法</label>
+                        <select class="form-control" name="model" id="model">
+                            <option value="1">一阶指数平滑预测</option>
+                            <option value="2">二阶指数平滑预测</option>
+                            <option value="3">三阶指数平滑预测</option>
+                            <option value="4">GM（1,1）模型预测</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <label for="device">预测机型</label>
+                        <select class="form-control" name="device" id="device">
+                            {% for device in devices %}
+                            <option value={{ device.id }}>{{ device.deviceID }}-{{ device.deviceName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="alpha">α取值（指数平滑预测请填写0~1之间的小数）</label>
+                            <input type="text" class="form-control" id="alpha" name="alpha" placeholder="请按需填写">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col-sm-4">
+                        <button id="submit" class="form-control"  style="width: 20%" type="button">预测</button>
+                    </div>
+                    <span style="color: #4ebada">{{evluativeWord }}</span>
+                </div>
+                </form>
+                <div class="col-lg-12" style="margin-top: 60px">
+                     <div id="chart" style="width:90%;height:400px;left:0;top:0;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock mainPanel%}
+{% block extraJS %}
+ <script>
+ $('#submit').click(function(){
+            var model = $("#model option:selected").val();                 //获得form中用户输入的name 注意这里的id_name 与你html中的id一致
+            var device = $("#device option:selected").val();
+            var alpha = $("#alpha").val();
+            $.ajax({
+                type:'GET',
+                data: {'model':model, 'device':device,'alpha':alpha},
+                url: 'http://127.0.0.1:8000/handleBidPricePredict', //后台处理函数的url 这里用的是static url 需要与urls.py中的name一致
+                cache: false,
+                async:true,
+                dataType: 'json',
+                success: function(data){
+                    var myChart = echarts.init(document.getElementById('chart'));
+                    option = {
+                        title : {
+                            text: '标价走势预测',
+                            subtext: '预测价格仅供参考使用'
+                        },
+                        tooltip : {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                               data:['历史标价','预测标价']
+                        },
+                        toolbox: {
+                            show : true,
+                            feature : {
+                                mark : {show: true},
+                                dataView : {show: true, readOnly: false},
+                                magicType : {show: true, type: ['line', 'bar']},
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        calculable : true,
+                        xAxis : [
+                            {
+                                type : 'category',
+                                boundaryGap : false,
+                                data:data.timeList
+                            }
+                        ],
+                        yAxis : [
+                            {
+                                type : 'value',
+                                boundaryGap : false,
+                                scale:true
+                            }
+                        ],
+                        series : [
+                            {
+                                name:'历史标价',
+                                type:'line',
+                                data:data.past,
+                                markLine : {
+                                    data : [
+                                        {type : 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+                            {
+                                name:'预测标价',
+                                type:'line',
+                                data:data.pre,
+                                markLine : {
+                                    data : [
+                                        {type : 'average', name : '平均值'}
+                                    ]
+                                }
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+                },
+                error: function(Edata){
+                    alert("抱歉，历史数据过少，无法形成预测图像，请参考历史标价");
+                    option = {
+                        title : {
+                            text: '历史标价变化',
+                        },
+                        tooltip : {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data:['历史标价']
+                        },
+                        toolbox: {
+                            show : true,
+                            feature : {
+                                mark : {show: true},
+                                dataView : {show: true, readOnly: false},
+                                magicType : {show: true, type: ['line', 'bar']},
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        calculable : true,
+                        xAxis : [
+                            {
+                                type : 'category',
+                                boundaryGap : false,
+                                data : Edata.timeList
+                            }
+                        ],
+                        yAxis : [
+                            {
+                                type : 'value',
+                            }
+                        ],
+                        series : [
+                            {
+                                name:'历史标价',
+                                type:'line',
+                                data:Edata.past,
+                                markLine : {
+                                    data : [
+                                        {type : 'average', name : '平均值'}
+                                    ]
+                                }
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+                   },
+                });
+             });
+ </script>
+{% endblock extraJS %}

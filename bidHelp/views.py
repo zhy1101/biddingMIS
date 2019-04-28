@@ -1,18 +1,22 @@
 #coding=utf-8
 
 from django.shortcuts import render,redirect
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 import bidHelp.models
+import bidHelp.Gray_model
 from django.db.models import Q
 from django.core.paginator import Paginator
 import datetime
 import os
-from django.http import StreamingHttpResponse
+import pandas as pd
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status
 from docxtpl import DocxTemplate
 from skimage import io,data
+import bidHelp.Gray_model
+import bidHelp.Exponential_Smooth
+from django.http import JsonResponse
 
 
 def postlogin(request):
@@ -61,7 +65,6 @@ def submitInvitation(request,Iid):
     return toManageInvitation(request)
 
 def refuseInvitation(request,Iid):
-    Iid = request.GET.get('Iid')
     obj = bidHelp.models.BidInvitation.objects.get(inviteID=Iid)
     obj.bidResponse = 'N'
     obj.save()
@@ -101,7 +104,7 @@ def AddProjectRequest(request):
     projectID = request.POST.get('pID')
     project = bidHelp.models.Project.objects.get(pID=projectID)
     project.pName = request.POST.get('pName')
-    project.startTime = datetime.datetime.now().strftime('%Y-%m-%d')
+    project.startTime = datetime.datetime().now().strftime('%Y-%m-%d')
     project.isGuaratee='N'
     device = bidHelp.models.Device.objects.get(id = request.POST.get('device_id'))
     project.aimDevice = device
@@ -120,7 +123,7 @@ def AddProjectRequest(request):
     BS.save()
     SS.save()
     #记录进度信息
-    proccess = bidHelp.models.ProjectProccess(pID=project,proccess=state,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    proccess = bidHelp.models.ProjectProccess(pID=project,proccess=state,time=datetime.datetime().now().strftime('%Y-%m-%d %H:%M:%S'))
     proccess.save()
     #记录要求信息
     req1 = bidHelp.models.BidRequest(pID=project,rName="开标时间",rContent=request.POST.get('bidStartTime'))
@@ -186,7 +189,7 @@ def download_report(request,pID):
         # 删除生成的报告
     filenames=['01投标函.docx','02开标一览表.docx','03投标分项报价表.docx','04法人授权书.docx',
               '05投标人资格证明.docx','06制造商资格证明.docx','07售后服务说明.docx','08营业执照副本.jpg']
-    filepath = 'd:\\' + p.pName+ ' '+datetime.datetime.now().strftime('%Y-%m-%d')
+    filepath = 'd:\\' + p.pName+ ' '+ datetime.datetime().now().strftime('%Y-%m-%d')
     if(os.path.exists(filepath)):
         filepath = filepath
     else:
@@ -207,8 +210,85 @@ def download_report(request,pID):
     state = bidHelp.models.StateParam.objects.get(paramID=2)
     p.pState = state
     p.save()
-    process = bidHelp.models.ProjectProccess.objects.create(pID=p,proccess=state,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    return tofastBidDocPage(request)
+    process = bidHelp.models.ProjectProccess.objects.create(pID=p,proccess=state,time=datetime.datetime().now().strftime('%Y-%m-%d %H:%M:%S'))
+    return tofastBidDocPage(request)  #最好处理成别的跳转方式
+
+
+def toBidPredictPage(request):
+    devices = bidHelp.models.Device.objects.all()
+    return render(request,'bidHelp/Bidding/bidPredictPage.html',{'devices':devices})
+
+def handleBidPricePredict(request):
+    device = request.GET.get('device')
+    projects = bidHelp.models.Project.objects.filter(aimDevice__id=device,pState_id=21).order_by('startTime')
+    pastPriceList = []
+    timeList = []
+    for project in projects:
+        year = project.startTime.year
+        month = ""
+        day = ""
+        if (project.startTime.month<10):
+            month = "0"+str(project.startTime.month)
+        else:  month = str(project.startTime.month)
+        if (project.startTime.day<10):
+            day = "0"+str(project.startTime.day)
+        else:
+            day = str(project.startTime.day)
+        time = str(year)+"-"+month+"-"+day
+        timeList.append(time)
+        past = project.bidPrice / project.quantity
+        pastPriceList.append(past)
+
+    model = request.GET.get('model')
+    if(request.GET.get('alpha')):
+       alpha = float(request.GET.get('alpha'))
+    pre = []
+    try:
+            #一阶指数平滑
+            if (model=='1'):
+                pre = bidHelp.Exponential_Smooth.exponential_smoothing(alpha, pastPriceList)
+                pre.insert(0,pre[0])
+            # 二阶指数平滑
+            if(model=='2'):
+                a,b  = bidHelp.Exponential_Smooth.compute_double(alpha,pastPriceList)
+                pre.append(pastPriceList[0])
+                for i in range(1,len(a)):
+                    pre.append(a[i-1]+b[i-1])
+            #三阶指数平滑
+            if(model=='3'):
+                a,b,c = bidHelp.Exponential_Smooth.compute_triple(alpha, pastPriceList)
+                pre.append(pastPriceList[0])
+                for i in range(1, len(a)):
+                    pre.append( a[i-1] + b[i-1] + c[i-1])
+            #GM预测
+            if(model=='4'):
+                    gm = bidHelp.Gray_model.Gray_model()
+                    series = pd.Series(index=timeList,data=pastPriceList)
+                    gm.fit(series)
+                    pre = gm.predict(len(pastPriceList)).tolist()
+    except Exception:
+            context = {'timeList': timeList, 'past': pastPriceList}
+            return JsonResponse(context)
+
+    context = {'timeList':timeList,'past':pastPriceList,'pre':pre}
+    return JsonResponse(context)
+
+def adminBankGuarantee(request):
+    uID = request.session['uID']
+    s_p = bidHelp.models.Staff_Project.objects.filter(staff__uID=uID,project__pState__paramID__in=[2,3])
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

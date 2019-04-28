@@ -16,7 +16,12 @@ urlpatterns =[
     url(r'^showProjectRequest/(?P<pID>[0-9]*)$', views.showProjectRequest, name='showProjectRequest'),
     url(r'^showBidRequestforST/(?P<uID>[0-9]*)$', views.showBidRequestforST, name='showBidRequestforST'),
     url(r'^tofastBidDocPage$', views.tofastBidDocPage, name='tofastBidDocPage'),
-    url(r'^download_report/(?P<pID>[0-9]*)$', views.download_report, name='download_report')
+    url(r'^download_report/(?P<pID>[0-9]*)$', views.download_report, name='download_report'),
+    url(r'^toBidPredictPage$', views.toBidPredictPage, name='toBidPredictPage'),
+    url(r'^handleBidPricePredict$', views.handleBidPricePredict, name='handleBidPricePredict'),
+    url(r'^adminBankGuarantee$', views.adminBankGuarantee, name='adminBankGuarantee'),
+
+
 
 
 
