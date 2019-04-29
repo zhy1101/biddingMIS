@@ -28,7 +28,7 @@
                         {% if data.project.pState.paramID == 5 %}
                         <td><input type="text" value="{{ data.bDate }}" id="bDate"/></td>
                         <td><input type="text" value="{{ data.bPlace }}" id="bPlace"/></td>
-                        <td>已确认开标信息，<a href="" onclick="getkey(this)">发送通知</a></td>
+                        <td>已确认开标信息，<button id="castBtn" onclick="cast({{ data.project.pID }})">发送通知</button></td>
                         {% else %}
                         <td>{{ data.bDate }}</td>
                         <td>{{ data.bPlace }}</td>
@@ -44,12 +44,12 @@
 <!--/.col-->
 </div>
 {%endblock%}
-{% block ExtralJS %}
+{% block extraCSS %}
 <script type="text/javascript">
-    function getkey(a) {
-            var pID ={{ data.project.pID }}
-        var bidDate = 'bidDate=' + document.getElementById("bDate").value;
-            var bidPlace = 'bidPlace=' + document.getElementById("bPlace").value;
-  a.href = 'http://127.0.0.1:8000/castBidNotice?'+'pID='+pID+'/'+bidDate+'/'+bidPlace;}
+        function cast(pID){
+            var bidDate = document.getElementById("bDate").value;
+            var bidPlace = document.getElementById("bPlace").value;
+            window.location.href = 'http://127.0.0.1:8000/castBidNotice/' + pID + '/' + bidDate + '/' + bidPlace;
+        }     
 </script>
-{% endblock ExtralJS %}
+{% endblock extraCSS %}

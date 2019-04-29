@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>开标通知 & 结果管理</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row">
+    {% if request.session.uKind == 'SS' %}
+        {% for unit in pro_bidTime_bidPlace %}
+        <div class="card" style="margin-left: 20px;margin-top: 20px">
+            <div class="card-header">
+                <strong>{{ unit.project.pName }}</strong>
+            </div>
+            <div class="card-block">
+                <form class="form-horizontal ">
+                    <div class="col-md-12"><p>客户：{{ unit.project.inviteID.cID.cName }}</p></div>
+                    <div class="col-md-12"><p>投标价格：¥ {{ unit.project.bidPrice }}</p></div>
+                    <div class="col-md-12"><p style="color: #bb0000;">开标时间：{{ unit.bidTime }}</p></div>
+                    <div class="col-md-12"><p style="color: #bb0000;">开标地点：{{ unit.bidPlace }}</p></div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-sm btn-primary" id="winBidBtn" onclick="reportResult_win({{ unit.project.pID }})"><i class="fa fa-dot-circle-o"></i>中标</button>
+                <button class="btn btn-sm btn-danger" id="lostBidBtn" onclick="toLostReasonForm({{ unit.project.pID }})"><i class="fa fa-ban"></i>失标</button>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        {% for unit in pro_SS_bidResult %}
+        <div class="card" style="margin-left: 20px;margin-top: 20px">
+            <div class="card-header">
+                <strong>{{ unit.project.pName }}</strong>
+            </div>
+            <div class="card-block">
+                <form action="" method="post" class="form-horizontal ">
+                    <div class="form-group row">
+                        <p>外派销售：{{ unit.SS.uName }}&nbsp;&nbsp;&nbsp;&nbsp;Tel:{{ unit.SS.uPhone }}</p>
+                    </div>
+                    <div class="form-group row">
+                        {% if unit.bidResult.isWin %}
+                        <p style="color: #00bf8f">开标结果:中标</p>
+                        <p>中标价：¥ {{ unit.bidResult.winPrice }}</p>
+                        <p>中标，确认无误后请通知项目组成员开始合同洽谈</p>
+                        {% else %}
+                        <p style="color: #bb0000">开标结果:失标</p>
+                        <p>中标公司：{{ unit.bidResult.winCompany }}</p>
+                        <p>中标价：¥ {{ unit.bidResult.winPrice }}</p>
+                        <p>我方投标价：¥ {{ unit.project.bidPrice }}</p>
+                        <p>失标原因简述：{{ unit.bidResult.lostReason }}</p>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-sm btn-primary"><i class="fa fa-dot-circle-o"></i>进入合同管理</button>
+                <button class="btn btn-sm btn-danger"><i class="fa fa-ban"></i>终止项目</button>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+</div>
+{%endblock%}
+{% block extraCSS %}
+    <script>
+        function reportResult_win(pID) {
+            if(confirm("确认该项目中标？"))
+            {
+                window.location.href='http://127.0.0.1:8000/reportResult_win'+pID;
+            }
+        }
+        function toLostReasonForm(pID) {
+            window.open('http://127.0.0.1:8000/toLostReasonForm/'+pID);
+        }
+
+
+    </script>
+{% endblock extraCSS %}
+

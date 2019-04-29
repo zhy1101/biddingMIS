@@ -315,10 +315,11 @@ def adminBidDocCheck(request):
     project_bidDate = zip(projects,bidDate)
     return render(request, 'bidHelp/Bidding/adminBidDocCheck.html', {'project_bidDate': project_bidDate})
 
-def applyBidCheck(request,pID):
+def applyBidCheck(request,pID,bidPrice):
     project = bidHelp.models.Project.objects.get(pID=int(pID))
     ps = bidHelp.models.StateParam.objects.get(paramID=4)
     project.pState = ps
+    project.bidPrice = bidPrice
     project.save()
     bidHelp.models.ProjectProccess.objects.create(pID=project, proccess=ps,
                                                   time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -335,7 +336,6 @@ def finishBidCheck(request,pID):
 
 def adminBidNotice(request):
     uID = request.session['uID']
-    user = bidHelp.models.User.objects.get(uID=uID)
     projects = bidHelp.models.Project.objects.filter(pState_id__in=[5,6])
     DataSet = []
     for pro in projects:
@@ -348,8 +348,67 @@ def adminBidNotice(request):
     return render(request, 'bidHelp/Bidding/adminBidNotice.html', {'DataSet':DataSet})
 
 def castBidNotice(request,pID,bidDate,bidPlace):
-
+    project = bidHelp.models.Project.objects.get(pID=int(pID))
+    preBidDate = bidHelp.models.BidRequest.objects.get(pID__pID=pID,rName='开标时间')
+    preBidDate.rContent = bidDate
+    preBidDate.save()
+    preBidPlace = bidHelp.models.BidRequest.objects.get(pID__pID=pID,rName='开标地点')
+    preBidPlace.rContent = bidPlace
+    preBidPlace.save()
+    state = bidHelp.models.StateParam.objects.get(paramID=6)
+    project.pState = state
+    project.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=project,proccess=state,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     return adminBidNotice(request)
+
+def adminBidOpen(request):
+    uID = request.session['uID']
+    user = bidHelp.models.User.objects.get(uID=uID)
+    pro_bidTime_bidPlace=[]
+    pro_SS_bidResult=[]
+    if(user.uKind=='SS'):
+        sps = bidHelp.models.Staff_Project.objects.filter(staff__uID=uID)
+        for sp in sps:
+            unit = {}
+            if(sp.project.pState_id==6):
+                unit['project']=sp.project
+                bidTime = bidHelp.models.BidRequest.objects.get(pID__pID=sp.project.pID,rName='开标时间').rContent
+                bidPlace = bidHelp.models.BidRequest.objects.get(pID__pID=sp.project.pID, rName='开标地点').rContent
+                unit['bidTime'] = bidTime
+                unit['bidPlace'] = bidPlace
+                pro_bidTime_bidPlace.append(unit)
+
+        return render(request,'bidHelp/BidOpen/adminBidOpen.html',{'pro_bidTime_bidPlace':pro_bidTime_bidPlace})
+    else:
+        projects = bidHelp.models.Project.objects.filter(pState__paramID=7)
+        for pro in projects:
+            unit = {}
+            unit['project'] = pro
+            unit['SS'] = bidHelp.models.Staff_Project.objects.get(project__pID=pro.pID,job='SS').staff
+            unit['bidResult'] = bidHelp.models.BidResult.objects.get(pID__pID=pro.pID)
+            pro_SS_bidResult.append(unit)
+
+        return render(request,'bidHelp/BidOpen/adminBidOpen.html',{'pro_SS_bidResult':pro_SS_bidResult})
+
+def reportResult_win(request,pID):
+    project = bidHelp.models.Project.objects.get(pID=pID)
+    state = bidHelp.models.StateParam.objects.get(paramID=7)
+    project.pState=state
+    project.save()
+    bidHelp.models.BidResult.objects.create(pID=project,time=datetime.datetime.now().strftime('%Y-%m-%d'),isWin=True,winPrice=project.bidPrice)
+    bidHelp.models.ProjectProccess.objects.create(pID=project, proccess=state,
+                                                  time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return HttpResponseRedirect("/adminBidOpen/")
+
+def toLostReasonForm(request,pID):
+    project = bidHelp.models.Project.objects.get(pID=pID)
+    return render(request,'bidHelp/BidOpen/LostReasonForm.html',{'project':project})
+
+def reportResult_lost(request):
+
+    return HttpResponseRedirect("/adminBidOpen/")
+
+
 
 
 

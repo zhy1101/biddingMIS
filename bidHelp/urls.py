@@ -22,10 +22,18 @@ urlpatterns =[
     url(r'^adminBankGuarantee$', views.adminBankGuarantee, name='adminBankGuarantee'),
     url(r'^applyGuarantee/(?P<pID>[0-9]*)$', views.applyGuarantee, name='applyGuarantee'),
     url(r'^adminBidDocCheck$', views.adminBidDocCheck, name='adminBidDocCheck'),
-    url(r'^applyBidCheck/(?P<pID>[0-9]*)$', views.applyBidCheck, name='applyBidCheck'),
+    url(r'^applyBidCheck/(?P<pID>[0-9]*)/(?P<bidPrice>[0-9]*)$', views.applyBidCheck, name='applyBidCheck'),
     url(r'^finishBidCheck/(?P<pID>[0-9]*)$', views.finishBidCheck, name='finishBidCheck'),
     url(r'^adminBidNotice$', views.adminBidNotice, name='adminBidNotice'),
-    url(r'^castBidNotice/(?P<pID>[0-9]*)/(?P<bidDate>\d*)/(?P<bidPlace>\d*)$', views.castBidNotice, name='castBidNotice'),
+    url(r'^castBidNotice/(?P<pID>[0-9]*)/(?P<bidDate>.+)/(?P<bidPlace>.+)$', views.castBidNotice, name='castBidNotice'),
+    url(r'^adminBidOpen$', views.adminBidOpen, name='adminBidOpen'),
+    url(r'^reportResult_win/(?P<pID>[0-9]*)$', views.reportResult_win, name='reportResult_win'),
+    url(r'^toLostReasonForm/(?P<pID>[0-9]*)$', views.toLostReasonForm, name='toLostReasonForm'),
+    url(r'^reportResult_lost$', views.reportResult_lost, name='reportResult_lost'),
+
+
+
+
 
 
 
