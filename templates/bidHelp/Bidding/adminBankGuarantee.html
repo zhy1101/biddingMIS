@@ -1,6 +1,6 @@
 {% extends "bidHelp/blank.html" %}
 {% block pageTitle  %}
- <title>一键生成标书框架</title>
+ <title>投标保函管理</title>
 {% endblock pageTitle%}
 {% block mainPanel %}
 <div class="row" style="margin-top: 40px">
@@ -17,15 +17,20 @@
                         <th>所属客户</th>
                         <th>保证金金额</th>
                         <th>状态</th>
-                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for pro in Gua_list %}
+                    {% for project,GuaPrice in pro_price %}
                     <tr>
-                        <td>{{ pro.pName }}</td>
-                        <td>{{ pro.startTime }}</td>
-                        <td><a href="http://127.0.0.1:8000/download_report/{{ pro.pID }}">一键生成标书文档</a></td>
+                        <td>{{ project.pName }}</td>
+                        <td>{{ project.inviteID.cID.cName }}</td>
+                        <td>RMB {{GuaPrice}}</td>
+                        {% if project.pState.paramID == 2 %}
+                        <td>未申领,向财务<a href = "http://127.0.0.1:8000/applyGuarantee/{{ project.pID }}">申领保函</a></td>
+                        {% endif %}
+                        {% if project.pState.paramID == 3 %}
+                        <td>已申领，请于标书上传/邮寄前于财务处领取</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

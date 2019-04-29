@@ -275,7 +275,81 @@ def handleBidPricePredict(request):
 
 def adminBankGuarantee(request):
     uID = request.session['uID']
-    s_p = bidHelp.models.Staff_Project.objects.filter(staff__uID=uID,project__pState__paramID__in=[2,3])
+    user = bidHelp.models.User.objects.get(uID=uID)
+    projects = []
+    GuaPrices = []
+    if (user.uKind == 'PJ'):
+        projects = bidHelp.models.Project.objects.filter(pState__paramID__in=[2, 3])
+        for project in projects:
+            GuaPrices.append(bidHelp.models.BidRequest.objects.get(pID__pID=project.pID,rName='保证金金额').rContent)
+    else:
+        s_p = bidHelp.models.Staff_Project.objects.filter(staff__uID=uID,project__pState__paramID__in=[2,3])
+        for i in range(0,len(s_p)):
+            projects.append(s_p[i].project)
+            GuaPrices.append(bidHelp.models.BidRequest.objects.get(pID__pID=s_p[i].project.pID,rName='保证金金额').rContent)
+    pro_price = zip(projects,GuaPrices)
+    return render(request,'bidHelp/Bidding/adminBankGuarantee.html',{'pro_price':pro_price})
+
+def applyGuarantee(request,pID):
+    project = bidHelp.models.Project.objects.get(pID=pID)
+    project.isGuaratee = 'Y'
+    ps = bidHelp.models.StateParam.objects.get(paramID=3)
+    project.pState = ps
+    project.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=project,proccess=ps,time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return adminBankGuarantee(request)
+
+def adminBidDocCheck(request):
+    uID = request.session['uID']
+    user = bidHelp.models.User.objects.get(uID=uID)
+    projects=[]
+    if (user.uKind == 'PJ'):
+        projects = bidHelp.models.Project.objects.filter(pState__paramID__in=[3,4])
+    else:
+        s_p = bidHelp.models.Staff_Project.objects.filter(staff__uID=uID, project__pState__paramID__in=[3,4])
+        for i in range(0, len(s_p)):
+            projects.append(s_p[i].project)
+    bidDate = []
+    for project in projects:
+        bidDate.append(bidHelp.models.BidRequest.objects.get(rName='开标时间',pID__pID=project.pID).rContent)
+    project_bidDate = zip(projects,bidDate)
+    return render(request, 'bidHelp/Bidding/adminBidDocCheck.html', {'project_bidDate': project_bidDate})
+
+def applyBidCheck(request,pID):
+    project = bidHelp.models.Project.objects.get(pID=int(pID))
+    ps = bidHelp.models.StateParam.objects.get(paramID=4)
+    project.pState = ps
+    project.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=project, proccess=ps,
+                                                  time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return adminBidDocCheck(request)
+
+def finishBidCheck(request,pID):
+    project = bidHelp.models.Project.objects.get(pID=pID)
+    ps = bidHelp.models.StateParam.objects.get(paramID=5)
+    project.pState = ps
+    project.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=project, proccess=ps,
+                                                  time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return adminBidDocCheck(request)
+
+def adminBidNotice(request):
+    uID = request.session['uID']
+    user = bidHelp.models.User.objects.get(uID=uID)
+    projects = bidHelp.models.Project.objects.filter(pState_id__in=[5,6])
+    DataSet = []
+    for pro in projects:
+        pro_bDate_bPlace_SS={}
+        pro_bDate_bPlace_SS['project'] = pro
+        pro_bDate_bPlace_SS['bDate'] = bidHelp.models.BidRequest.objects.get(pID__pID=pro.pID,rName='开标时间').rContent
+        pro_bDate_bPlace_SS['bPlace'] = bidHelp.models.BidRequest.objects.get(pID__pID=pro.pID,rName='开标地点').rContent
+        pro_bDate_bPlace_SS['SS'] = bidHelp.models.Staff_Project.objects.get(project__pID=pro.pID,job='SS').staff
+        DataSet.append(pro_bDate_bPlace_SS)
+    return render(request, 'bidHelp/Bidding/adminBidNotice.html', {'DataSet':DataSet})
+
+def castBidNotice(request,pID,bidDate,bidPlace):
+
+    return adminBidNotice(request)
 
 
 

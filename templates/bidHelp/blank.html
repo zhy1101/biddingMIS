@@ -80,10 +80,10 @@
 										<a class="nav-link" href="http://127.0.0.1:8000/toBidPredictPage"><i class="icon-book-open "></i>标价预测</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>标书审批</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminBidDocCheck"><i class="icon-book-open "></i>标书审批</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>通知开标</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminBidNotice"><i class="icon-book-open "></i>通知开标</a>
 									</li>
 								</ul>
 							</li>
@@ -237,89 +237,88 @@
 
 {% if  request.session.uKind == 'TS' or request.session.uKind == 'BS' %}
 		 <nav class="sidebar-nav">
-						<ul class="nav">
-							<li class="nav-item">
-								<a class="nav-link" href="index.html"><i class="icon-speedometer"></i> 项目进度总览</a>
-							</li>
-							<li class="nav-title">
-								投标管理
-							</li>
-							<li class="nav-item nav-dropdown">
-								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-puzzle"></i> 前期筹备</a>
-								<ul class="nav-dropdown-items">
-									<li class="nav-item">
-										<a class="nav-link" href="components-social-buttons.html"><i class="icon-puzzle"></i> 客户审查</a>
-									</li>
-								</ul>
-							</li>
-							<li class="nav-item nav-dropdown">
-								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-book-open "></i>投标作业</a>
-								<ul class="nav-dropdown-items">
-									<li class="nav-item">
-										<a class="nav-link" href="http://127.0.0.1:8000/showBidRequestforST/{{ session.uID }}"><i class="icon-book-open "></i>查询要求清单</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>一键生成基础标书文档</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>投标保函管理</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>标价预测</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>标书审批</a>
-									</li>
-							</li>
-							 <li class="nav-item nav-dropdown">
-								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-flag "></i>开标管理</a>
-								<ul class="nav-dropdown-items">
-									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-flag "></i>查询开标结果</a>
-									</li>
-								</ul>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="widgets.html"><i class="icon-pie-chart"></i> 投标近况统计 </a>
-							</li>
-							<li class="divider"></li>
-
-
-							<li class="nav-title">
-								合同履约管理
-							</li>
-							<li class="nav-item nav-dropdown">
-								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-pencil "></i>合同签署</a>
-								<ul class="nav-dropdown-items">
-									<li class="nav-item">
-										<a class="nav-link" href="pages-500.html" target="_top"><i class="icon-pencil "></i>一键生成初版合同</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="pages-404.html" target="_top"><i class="icon-pencil "></i>查看额外需求列表</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="pages-500.html" target="_top"><i class="icon-pencil "></i>合同文件管理</a>
-									</li>
-								</ul>
-							</li>
-
-							<li class="nav-item nav-dropdown">
-								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-target "></i>履约管理</a>
-								<ul class="nav-dropdown-items">
-									<li class="nav-item">
-										<a class="nav-link" href="pages-login.html" target="_top"><i class="icon-target "></i>货款到账通知</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="pages-register.html" target="_top"><i class="icon-target "></i>临期警报</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="pages-404.html" target="_top"><i class="icon-target "></i>逾期警报</a>
-									</li>
-								</ul>
-							</li>
-						</ul>
-                      </li></ul>
-					</nav>
+             <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html"><i class="icon-speedometer"></i> 项目进度总览</a>
+                </li>
+                <li class="nav-title">
+                    投标管理
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-puzzle"></i> 前期筹备</a>
+                    <ul class="nav-dropdown-items">
+                        <li class="nav-item">
+                            <a class="nav-link" href="components-social-buttons.html"><i class="icon-puzzle"></i> 客户审查</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-book-open "></i>投标作业</a>
+                    <ul class="nav-dropdown-items">
+                        <li class="nav-item">
+                            <a class="nav-link" href="http://127.0.0.1:8000/showBidRequestforST/{{ session.uID }}"><i class="icon-book-open "></i>查询要求清单</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>一键生成基础标书文档</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>投标保函管理</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>标价预测</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="http://127.0.0.1:8000/adminBidDocCheck"><i class="icon-book-open "></i>标书审批</a>
+                        </li>
+                    </ul>
+                </li>
+                 <li class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-flag "></i>开标管理</a>
+                    <ul class="nav-dropdown-items">
+                        <li class="nav-item">
+                            <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-flag "></i>查询开标结果</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="widgets.html"><i class="icon-pie-chart"></i> 投标近况统计 </a>
+                </li>
+                <li class="divider"></li>
+                <li class="nav-title">
+                    合同履约管理
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-pencil "></i>合同签署</a>
+                    <ul class="nav-dropdown-items">
+                        <li class="nav-item">
+                            <a class="nav-link" href="pages-500.html" target="_top"><i class="icon-pencil "></i>一键生成初版合同</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="pages-404.html" target="_top"><i class="icon-pencil "></i>查看额外需求列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="pages-500.html" target="_top"><i class="icon-pencil "></i>合同文件管理</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item nav-dropdown">
+                    <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-target "></i>履约管理</a>
+                    <ul class="nav-dropdown-items">
+                        <li class="nav-item">
+                            <a class="nav-link" href="pages-login.html" target="_top"><i class="icon-target "></i>货款到账通知</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="pages-register.html" target="_top"><i class="icon-target "></i>临期警报</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="pages-404.html" target="_top"><i class="icon-target "></i>逾期警报</a>
+                        </li>
+                    </ul>
+                </li>
+             </ul>
+             </li>
+             </ul>
+         </nav>
 {%endif%}
         </div>
 

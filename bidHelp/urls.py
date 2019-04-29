@@ -20,6 +20,17 @@ urlpatterns =[
     url(r'^toBidPredictPage$', views.toBidPredictPage, name='toBidPredictPage'),
     url(r'^handleBidPricePredict$', views.handleBidPricePredict, name='handleBidPricePredict'),
     url(r'^adminBankGuarantee$', views.adminBankGuarantee, name='adminBankGuarantee'),
+    url(r'^applyGuarantee/(?P<pID>[0-9]*)$', views.applyGuarantee, name='applyGuarantee'),
+    url(r'^adminBidDocCheck$', views.adminBidDocCheck, name='adminBidDocCheck'),
+    url(r'^applyBidCheck/(?P<pID>[0-9]*)$', views.applyBidCheck, name='applyBidCheck'),
+    url(r'^finishBidCheck/(?P<pID>[0-9]*)$', views.finishBidCheck, name='finishBidCheck'),
+    url(r'^adminBidNotice$', views.adminBidNotice, name='adminBidNotice'),
+    url(r'^castBidNotice/(?P<pID>[0-9]*)/(?P<bidDate>\d*)/(?P<bidPlace>\d*)$', views.castBidNotice, name='castBidNotice'),
+
+
+
+
+
 
 
 

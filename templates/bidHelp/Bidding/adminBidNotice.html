@@ -1,0 +1,55 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>管理开标通知</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-align-justify"></i>待开标项目
+        </div>
+        <div class="card-block">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>项目名称(点击名称查看项目要求)</th>
+                        <th>外派销售信息</th>
+                        <th>开标时间</th>
+                        <th>开标地点</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in DataSet %}
+                    <tr>
+                        <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ data.project.pID }}">{{ data.project.pName }}</a></td>
+                        <td>{{ data.SS.uName }}&nbsp;&nbsp;&nbsp;Tel:{{ data.SS.uPhone }}</td>
+                        {% if data.project.pState.paramID == 5 %}
+                        <td><input type="text" value="{{ data.bDate }}" id="bDate"/></td>
+                        <td><input type="text" value="{{ data.bPlace }}" id="bPlace"/></td>
+                        <td>已确认开标信息，<a href="" onclick="getkey(this)">发送通知</a></td>
+                        {% else %}
+                        <td>{{ data.bDate }}</td>
+                        <td>{{ data.bPlace }}</td>
+                        <td>已发送通知,等待正式开标</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+          </table>
+        </div>
+    </div>
+</div>
+<!--/.col-->
+</div>
+{%endblock%}
+{% block ExtralJS %}
+<script type="text/javascript">
+    function getkey(a) {
+            var pID ={{ data.project.pID }}
+        var bidDate = 'bidDate=' + document.getElementById("bDate").value;
+            var bidPlace = 'bidPlace=' + document.getElementById("bPlace").value;
+  a.href = 'http://127.0.0.1:8000/castBidNotice?'+'pID='+pID+'/'+bidDate+'/'+bidPlace;}
+</script>
+{% endblock ExtralJS %}

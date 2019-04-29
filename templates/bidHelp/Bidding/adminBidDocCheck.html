@@ -1,0 +1,54 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>标书审批管理</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-align-justify"></i>未审批标书文件
+        </div>
+        <div class="card-block">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>项目名称(点击名称查看项目要求)</th>
+                        <th>所属客户</th>
+                        <th>标书文件路径</th>
+                        <th>开标时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p,d in project_bidDate %}
+                    <tr>
+                        <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ p.pID }}">{{ p.pName }}</a></td>
+                        <td>{{ p.inviteID.cID.cName }}</td>
+                        <td>{{ p.bidDocPath }}</td>
+                        <td>{{ d }}</td>
+                    {% if request.session.uKind == 'PJ' %}
+                        {% if p.pState.paramID == 3 %}
+                        <td>标书正在制作中</td>
+                        {% endif %}
+                        {% if p.pState.paramID == 4 %}
+                        <td><a href = "http://127.0.0.1:8000/finishBidCheck/{{ p.pID }}">同意审批</a></td>
+                        {% endif %}
+                    {% else %}
+                        {% if p.pState.paramID == 3 %}
+                        <td>完成标书制作，<a href = "http://127.0.0.1:8000/applyBidCheck/{{ p.pID }}">申请审批</a></td>
+                        {% endif %}
+                        {% if p.pState.paramID == 4 %}
+                        <td>正在等待审批</td>
+                        {% endif %}
+                    {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+          </table>
+        </div>
+    </div>
+</div>
+<!--/.col-->
+</div>
+{%endblock%}
