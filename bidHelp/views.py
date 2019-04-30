@@ -71,14 +71,14 @@ def refuseInvitation(request,Iid):
     return toManageInvitation(request)
 
 def adminProjectRequest(request,npIndex,rpIndex):
-    noListProject = bidHelp.models.Project.objects.filter(pState=23)
+    noListProject = bidHelp.models.Project.objects.filter(pState=23).order_by("pID")
     np = Paginator(noListProject, 5)
     if npIndex == '':
         npIndex = '1'
     npIndex = int(npIndex)
     noListProject = np.page(npIndex)
     nplistrange = np.page_range
-    readyProject = bidHelp.models.Project.objects.filter(pState_id__lt=21)
+    readyProject = bidHelp.models.Project.objects.filter(pState_id__lt=21).order_by("pID")
     rp = Paginator(readyProject, 5)
     if rpIndex == '':
         rpIndex = '1'
@@ -359,7 +359,7 @@ def castBidNotice(request,pID,bidDate,bidPlace):
     project.pState = state
     project.save()
     bidHelp.models.ProjectProccess.objects.create(pID=project,proccess=state,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    return adminBidNotice(request)
+    return HttpResponseRedirect("/adminBidNotice")
 
 def adminBidOpen(request):
     uID = request.session['uID']
@@ -398,15 +398,134 @@ def reportResult_win(request,pID):
     bidHelp.models.BidResult.objects.create(pID=project,time=datetime.datetime.now().strftime('%Y-%m-%d'),isWin=True,winPrice=project.bidPrice)
     bidHelp.models.ProjectProccess.objects.create(pID=project, proccess=state,
                                                   time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    return HttpResponseRedirect("/adminBidOpen/")
+    return HttpResponseRedirect("/adminBidOpen")
 
 def toLostReasonForm(request,pID):
     project = bidHelp.models.Project.objects.get(pID=pID)
     return render(request,'bidHelp/BidOpen/LostReasonForm.html',{'project':project})
 
 def reportResult_lost(request):
+    pID = request.POST.get('projectID')
+    project = bidHelp.models.Project.objects.get(pID=pID)
+    state = bidHelp.models.StateParam.objects.get(paramID=7)
+    project.pState = state
+    project.save()
+    winCompany = request.POST.get('winCompany')
+    winPrice = request.POST.get('winPrice')
+    remark = request.POST.get('remark')
+    reason = ""
+    if (request.POST.get('price')=='1'):
+        reason += "价格因素；"
+    if (request.POST.get('technical')=='1'):
+        reason += "技术设计因素；"
+    if (request.POST.get('relationship')=='1'):
+        reason += "客户关系因素；"
+    if (request.POST.get('after-sale')=='1'):
+        reason += "售后服务因素；"
+    if (request.POST.get('other')=='1'):
+         reason += "其他因素；"
 
-    return HttpResponseRedirect("/adminBidOpen/")
+    bidHelp.models.BidResult.objects.create(pID=project, time=datetime.datetime.now().strftime('%Y-%m-%d'), isWin=False,
+                                            winPrice=winPrice,winCompany=winCompany,lostReason=reason,remark=remark)
+    bidHelp.models.ProjectProccess.objects.create(pID=project, proccess=state,
+                                                  time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return HttpResponseRedirect("/adminBidOpen")
+
+def informWin(request,pID):
+    project = bidHelp.models.Project.objects.get(pID=pID)
+    state = bidHelp.models.StateParam.objects.get(paramID=9)
+    project.pState = state
+    project.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=project, proccess=state,
+                                                  time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    bidHelp.models.Contract.objects.create(pID=project,state=project.pState,newVerID=1)
+    return HttpResponseRedirect("/adminBidOpen")
+
+def informLost (request,pID):
+    project = bidHelp.models.Project.objects.get(pID=pID)
+    state = bidHelp.models.StateParam.objects.get(paramID=8)
+    project.pState = state
+    project.endTime = datetime.datetime.now().strftime('%Y-%m-%d')
+    project.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=project, proccess=state,
+                                                  time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return HttpResponseRedirect("/adminBidOpen")
+
+def recentBidResult(request):
+    now = datetime.datetime.now()
+    start = now - datetime.timedelta(hours=71, minutes=59, seconds=59)
+    recentBRSet = bidHelp.models.BidResult.objects.filter(time__gt=start)
+    return render(request,'bidHelp/BidOpen/recentBidResult.html',{'recentBRSet':recentBRSet})
+
+def searchBidResultByWord(request,searchWord):
+    searchBidResultSet=[]
+    if(searchWord != ""):
+        searchBidResultSet = bidHelp.models.BidResult.objects.order_by('-time',).filter(Q(pID__pName__contains=searchWord)|Q(pID__inviteID__cID__cName=searchWord)|Q(pID__aimDevice__deviceID=searchWord))
+    if(len(searchBidResultSet)>0):
+        return render(request,'bidHelp/BidOpen/recentBidResult.html',{'searchBRSet':searchBidResultSet})
+    else:
+        return render(request,'bidHelp/BidOpen/recentBidResult.html',{'searchBRSet':searchBidResultSet,'remindWord ' :'noResult'})
+
+def adminExtralRequest(request):
+    uID = request.session['uID']
+    uKind = bidHelp.models.User.objects.get(uID=uID).uKind
+    bidResult_waitURS_yesURS_noURS =[]
+    if(uKind=='PJ'):
+        bidResults = bidHelp.models.BidResult.objects.filter(pID__pState__paramID=9,isWin=True)
+    else:
+        mys_ps = bidHelp.models.Staff_Project.objects.filter(staff__uID=uID)
+        myprojectsID = []
+        for mys_p in mys_ps:
+            myprojectsID.append(mys_p.project.pID)
+        bidResults = bidHelp.models.BidResult.objects.filter(pID__pState__paramID=9,isWin=True,pID__pID__in=myprojectsID)
+
+    for BR in bidResults :
+        unit = {}
+        unit['bidResult'] = BR
+        contract_id = bidHelp.models.Contract.objects.get(pID__pID=BR.pID.pID).contractID
+        waitURS = bidHelp.models.ExtraRequest.objects.filter(contractID__contractID=contract_id).exclude(Q(answer='Y')|Q(answer='N'))
+        unit['waitURS'] = waitURS
+        yesURS = bidHelp.models.ExtraRequest.objects.filter(contractID__contractID=contract_id,answer='Y')
+        unit['yesURS'] = yesURS
+        noURS = bidHelp.models.ExtraRequest.objects.filter(contractID__contractID=contract_id,answer='N')
+        unit['noURS'] = noURS
+        bidResult_waitURS_yesURS_noURS.append(unit)
+
+    return render(request,'bidHelp/SignContract/adminExtralRequest.html',{'bidResult_waitURS_yesURS_noURS':bidResult_waitURS_yesURS_noURS})
+
+def addURS_Page(request,pID):
+    contract = bidHelp.models.Contract.objects.get(pID__pID=pID)
+    project = bidHelp.models.Project.objects.get(pID=pID)
+    return render(request,'bidHelp/SignContract/addURS_Page.html',{'contract':contract,'project':project})
+
+def addURS_handel(request):
+    contractID = request.POST.get('contractID')
+    requestContent = request.POST.get('requestContent')
+    contract = bidHelp.models.Contract.objects.get(contractID=contractID)
+    bidHelp.models.ExtraRequest.objects.create(contractID=contract,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),requestContent=requestContent)
+    return HttpResponseRedirect("/adminExtralRequest")
+
+def answerURS_Page(request):
+    extralRequests = bidHelp.models.ExtraRequest.objects.order_by('time').exclude(Q(answer='Y')|Q(answer='N'))
+    return render(request,'bidHelp/SignContract/answerURS_Page.html',{'extralRequests':extralRequests})
+
+def commitURS(request,URS_ID):
+    urs = bidHelp.models.ExtraRequest.objects.get(id=URS_ID)
+    urs.answer = 'Y'
+    urs.save()
+    return HttpResponseRedirect("/answerURS_Page")
+
+def refuseURS(request,URS_ID,reason):
+    urs = bidHelp.models.ExtraRequest.objects.get(id=URS_ID)
+    urs.answer = 'N'
+    urs.remark =reason
+    urs.save()
+    return HttpResponseRedirect("/answerURS_Page")
+
+
+
+
+
 
 
 

@@ -99,7 +99,7 @@ class BidResult(models.Model):
     isWin = models.BooleanField(blank=True)
     winPrice = models.IntegerField(blank=True)
     winCompany = models.CharField(max_length=30,blank=True)
-    lostReason = models.CharField(max_length=30,blank=True)
+    lostReason = models.TextField(blank=True)
     remark = models.CharField(max_length=100,blank=True)
     class Meta:
         managed = True

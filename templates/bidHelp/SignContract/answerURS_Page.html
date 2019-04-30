@@ -1,0 +1,58 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>应答客户需求</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-align-justify"></i>待审批额外客户需求
+        </div>
+        <div class="card-block">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>项目名称(点击名称查看项目要求)</th>
+                        <th>所属客户</th>
+                        <th>申请内容</th>
+                        <th>申请时间</th>
+                        <th>操作</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for URS in extralRequests %}
+                    <tr>
+                        <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ URS.contractID.pID.pID }}">{{ URS.contractID.pID.pName }}</a></td>
+                        <td>{{ URS.contractID.pID.inviteID.cID.cName }}</td>
+                        <td>{{ URS.requestContent}}</td>
+                        <td>{{ URS.time }}</td>
+                        <td><button class="btn btn-outline-success btn-sm" type="button" id="commitBtn" onclick="commit({{ URS.id }})">同意应答</button></td>
+                        <td><button class="btn btn-outline-danger btn-sm" type="button" id="refuseBtn" onclick="refuse({{ URS.id }})">拒绝申请</button></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+          </table>
+        </div>
+    </div>
+</div>
+<!--/.col-->
+</div>
+{%endblock%}
+{% block extraCSS %}
+<script type="text/javascript">
+        function commit(URS_ID){
+            var a = confirm("确定应答该条需求？")
+            if (a){
+            window.location.href = 'http://127.0.0.1:8000/commitURS/'+ URS_ID ;
+            }
+        } 
+        function refuse(URS_ID){
+            var reason = prompt("若确认拒绝该申请，请填写相应理由","")
+             if (reason!=null && reason!=""){
+                 window.location.href = 'http://127.0.0.1:8000/refuseURS/'+ URS_ID+'/'+reason;
+             }
+        }    
+</script>
+{% endblock extraCSS %}

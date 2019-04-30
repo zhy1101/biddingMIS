@@ -30,6 +30,30 @@ urlpatterns =[
     url(r'^reportResult_win/(?P<pID>[0-9]*)$', views.reportResult_win, name='reportResult_win'),
     url(r'^toLostReasonForm/(?P<pID>[0-9]*)$', views.toLostReasonForm, name='toLostReasonForm'),
     url(r'^reportResult_lost$', views.reportResult_lost, name='reportResult_lost'),
+    url(r'^informWin/(?P<pID>[0-9]*)$', views.informWin, name='informWin'),
+    url(r'^informLost/(?P<pID>[0-9]*)$', views.informLost, name='informLost'),
+    url(r'^recentBidResult$', views.recentBidResult, name='recentBidResult'),
+    url(r'^searchBidResultByWord/(?P<searchWord>.+)',views.searchBidResultByWord, name='searchBidResultByWord'),
+    url(r'^adminExtralRequest', views.adminExtralRequest, name='adminExtralRequest'),
+    url(r'^addURS_Page/(?P<pID>[0-9]*)$', views.addURS_Page, name='addURS_Page'),
+    url(r'^addURS_handel$', views.addURS_handel, name='addURS_handel'),
+    url(r'^answerURS_Page$', views.answerURS_Page, name='answerURS_Page'),
+    url(r'^commitURS/(?P<URS_ID>[0-9]*)$', views.commitURS, name='commitURS'),
+    url(r'^refuseURS/(?P<URS_ID>[0-9]*)/(?P<reason>.+)$', views.refuseURS, name='refuseURS'),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

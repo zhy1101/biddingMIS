@@ -1,0 +1,70 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>合同签署-额外需求管理</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-align-justify"></i> 正在洽谈中的项目
+            </div>
+            <div class="card-block">
+                <table class="table table-bordered table-striped table-condensed">
+                    <thead>
+                        <tr>
+                            <th>项目信息</th>
+                            <th>待应答需求</th>
+                            <th>已应答需求</th>
+                            <th>已拒绝需求</th>
+                            <th>新增申请</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unit in bidResult_waitURS_yesURS_noURS %}
+                        <tr>
+                            <td>
+                                <p style="font-weight: bold">{{ unit.bidResult.pID.pName }}</p>
+                                <p>开标时间：{{ unit.bidResult.time }}</p>
+                                <p>中标价格：¥{{unit.bidResult.winPrice }}</p>
+                            </td>
+                            <td>
+                                <ul>
+                                    {% for wR in unit.waitURS %}
+                                        <li>{{ wR.requestContent }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    {% for yR in unit.yesURS %}
+                                        <li>{{ yR.requestContent }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    {% for nR in unit.noURS %}
+                                        <li>{{ nR.requestContent }}
+                                        <ul><li style="color:#EE2C2C">{{ nR.remark }}</li></ul>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td><button class="btn btn-primary" type="button" id="addURSbtn" onclick="toaddURSPage({{ unit.bidResult.pID.pID }})"><i class="fa fa-plus-circle "></i>&nbsp; 申请</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock mainPanel%}
+{% block extraCSS %}
+    <script>
+        function toaddURSPage(pID) {
+            window.open('http://127.0.0.1:8000/addURS_Page/'+pID)
+        }
+    </script>
+{% endblock extraCSS%}

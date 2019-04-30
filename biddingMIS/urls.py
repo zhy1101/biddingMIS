@@ -19,5 +19,6 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^',include(('bidHelp.urls',"bidHelp"),namespace='bidHelp'))
+    url(r'^',include(('bidHelp.urls',"bidHelp"),namespace='bidHelp')),
+
 ]

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加客户需求申请-{{ project.pName }}</title>
+
+    <link href="/static/bidHelp/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/bidHelp/css/simple-line-icons.css" rel="stylesheet">
+    <!-- Main styles for this application -->
+    <link href="/static/bidHelp/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="row">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-edit"></i>额外需求申请表
+            </div>
+            <div class="card-block">
+                <form class="form-horizontal" method="post" action="http://127.0.0.1:8000/addURS_handel">
+                    <input type="hidden" name="projectID" value="{{ project.pID }}">
+                    <input type="hidden" name="contractID" value="{{ contract.contractID }}">
+                    <div class="form-group">
+                        <label class="form-control-label" for="projectName">项目名称</label>
+                        <div class="controls">
+                            <div class="input-prepend input-group">
+                                <input id="projectName" disabled="" class="form-control" size="16" type="text" value="{{ project.pName }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="clientName">客户名称</label>
+                        <div class="controls">
+                            <div class="input-prepend input-group">
+                                <input id="clientName" disabled="" class="form-control" size="16" type="text" value="{{ project.inviteID.cID.cName }} - {{ project.inviteID.cID.cEnglishName }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="winPrice">中标价</label>
+                        <div class="controls">
+                            <div class="input-prepend input-group">
+                                <span class="input-group-addon">¥</span>
+                                <input id="winPrice" class="form-control" size="16" type="text" disabled="" value="{{ project.bidPrice }}">
+                                <span class="input-group-addon">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 form-control-label" for="requestContent">需求详细说明</label>
+                        <div class="controls">
+                        <div class="col-md-9">
+                            <textarea id="requestContent" name="requestContent" rows="9" class="form-control" placeholder="请详细描述客户额外需求..."></textarea>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--/.col-->
+</div>
+    <script src="/static/bidHelp/assets/js/libs/jquery.min.js"></script>
+	<script src="/static/bidHelp/assets/js/libs/tether.min.js"></script>
+	<script src="/static/bidHelp/assets/js/libs/bootstrap.min.js"></script>
+</body>
+</html>

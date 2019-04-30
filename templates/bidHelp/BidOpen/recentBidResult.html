@@ -1,0 +1,106 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>开标结果查询管理</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-search "></i> 搜索开标结果
+            </div>
+            <div class="card-block">
+                <div class="form-group row">
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            <input type="text" id="searchInfor" class="form-control" placeholder="请输入项目名称或客户名称等关键字">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-primary" id="searchBtn" onclick="searchBR()">搜索</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/.col-->
+</div>
+{% if searchBRSet|length < 1 %}
+    {% if remindWord == 'noResult'%}
+        <div style="text-align: center"><h5>无相关搜索结果，请参考近三日开标结果</h5></div>
+    {% endif %}
+    <h3>近三日开标结果 >>>></h3>
+    <hr/>
+<div class="row">
+    {% for BR in recentBRSet %}
+        <div class="card" style="margin-left: 20px;margin-top: 20px">
+                <div class="card-header">
+                    <strong>{{ BR.pID.pName }}</strong>
+                </div>
+                <div class="card-block">
+                    <form action="" method="post">
+                {% if BR.isWin %}
+                        <div><p style="color: #00bf8f">开标结果:中标</p> </div>
+                        <div><p>日期：{{ BR.time }}</p></div>
+                        <div><p>中标价：¥ {{ BR.winPrice }}</p></div>
+                        <div><p>采购机型：{{ BR.pID.aimDevice.deviceID }}</p></div>
+                        <div><p>采购数量：{{ BR.pID.quantity }}</p></div>
+                    </form>
+                </div>
+                {% else %}
+                        <div ><p style="color: #bb0000">开标结果:失标</p></div>
+                        <div ><p>中标公司：{{ BR.winCompany }}</p></div>
+                        <div ><p>中标价：¥ {{ BR.winPrice }}</p></div>
+                        <div><p>我方投标价：¥ {{ BR.project.bidPrice }}</p></div>
+                        <div><p>失标原因简述：{{ BR.lostReason }}</p></div>
+                        <div><p>其他说明：{{ BR.remark }}</p></div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+    {% endfor %}
+{% else %}
+    <h3>搜索结果 >>>></h3>
+    <hr/>
+<div class="row">
+    {% for BR in searchBRSet %}
+        <div class="card" style="margin-left: 20px;margin-top: 20px">
+                <div class="card-header">
+                    <strong>{{ BR.pID.pName }}</strong>
+                </div>
+                <div class="card-block">
+                    <form action="" method="post" class="form-horizontal ">
+                {% if BR.isWin %}
+                        <div><p style="color: #00bf8f">开标结果:中标</p> </div>
+                        <div><p>日期：{{ BR.time }}</p></div>
+                        <div><p>中标价：¥ {{ BR.winPrice }}</p></div>
+                        <div><p>采购机型：{{ BR.pID.aimDevice.deviceID }}</p></div>
+                        <div><p>采购数量：{{ BR.pID.quantity }}</p></div>
+                    </form>
+                </div>
+                {% else %}
+                        <div><p style="color: #bb0000">开标结果:失标&nbsp;&nbsp;&nbsp;&nbsp;<span>日期：{{ BR.time }}</span></p></div>
+                        <div><span>中标公司：{{ BR.winCompany }}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>中标价：¥ {{ BR.winPrice }}</span></div>
+                        <div><p>我方投标价：¥ {{ BR.pID.bidPrice }}</p></div>
+                        <div><p>失标原因简述：{{ BR.lostReason }}</p></div>
+                        <div><p>其他说明：{{ BR.remark }}</p></div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+    {% endfor %}
+{% endif %}
+{%endblock%}
+
+{% block extraCSS %}
+    <script>
+        function searchBR() {
+            var serchInfor = document.getElementById('searchInfor').value;
+            if(serchInfor != ""&& serchInfor!=null){
+                window.location.href='http://127.0.0.1:8000/searchBidResultByWord/'+serchInfor;
+            }else{
+                alert("搜索内容不能为空！")
+            }
+        }
+    </script>
+{% endblock extraCSS %}
