@@ -1,0 +1,174 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>合同签署管理</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-align-justify"></i>待完成签署的合同
+        </div>
+        <div class="card-block">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th width="10%">项目名称(点击名称查看项目要求)</th>
+                        <th width="10%">所属客户</th>
+                        <th width="40%">合同参数</th>
+                        <th width="25%">进度时间</th>
+                        <th width="15%">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for unit in contract_processes %}
+                    <tr>
+                        <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ unit.contract.pID.pID }}">{{ unit.contract.pID.pName }}</a></td>
+                        <td>{{ unit.contract.pID.inviteID.cID.cName }}</td>
+                        <td>
+                            {% if unit.contract.state.paramID == 9 %}
+                                <p>终稿版本号：第<input type="text" name="finalverID" id="finalverID" class="shortInput"/>版合同</p>
+                                <p>合同成交价：¥ <input type="text" name="contractPrice" id="contractPrice"/></p>
+                                <p style="line-height:30px">付款规则：自收到乙方签约合同 <input type="text" name="firTimeSpan" id="firTimeSpan" class="shortInput"/>天内，
+                                    交付总成交价的<input type="text" name="firPartPrice" id="firPartPrice" class="shortInput">% 作为首付款，
+                                    收到首付款后,<input type="text" name="productTime" id="productTime" class="shortInput">天内完成生产并开始FAT验收，
+                                    FAT验收协议签署后<input type="text" name="secTimeSpan" id="secTimeSpan" class="shortInput">天内乙方需交付成交价的<input name="secPartPrice" type="text" id="secPartPrice" class="shortInput">%作为中期付款，
+                                    收到中期货款后<input type="text" name="conveyTime"  id="conveyTime" class="shortInput">天内将货物运至乙方工厂完成安装并开始SAT验收，
+                                    SAT验收协议签署后<input type="text" name="thrTimeSpan" id="thrTimeSpan" class="shortInput">天内乙方需将余下的<input type="text" name="thrPartPrice" id="thrPartPrice" class="shortInput">%货款交付甲方账户。
+                                </p>
+                            {% else %}
+                                <p>终稿版本号：第{{ unit.contract.newVerID }}版合同</p>
+                                <p>合同成交价：¥ {{ unit.contract.contractPrice }}</p>
+                                <p style="line-height:30px">付款规则：自收到乙方签约合同{{ unit.contract.firTimeSpan }} 天内，
+                                    交付总成交价的{{ unit.contract.firPartPrice}}% 作为首付款，
+                                    收到首付款后,{{ unit.contract.productTime}}天内完成生产并开始FAT验收，
+                                    FAT验收协议签署后{{ unit.contract.secTimeSpan }}天内乙方需交付成交价的{{ unit.contract.secPartPrice }}%作为中期付款，
+                                    收到中期货款后{{ unit.contract.conveyTime }}天内将货物运至乙方工厂完成安装并开始SAT验收，
+                                    SAT验收协议签署后{{ unit.contract.thrTimeSpan }}天内乙方需将余下的{{ unit.contract.thrPartPrice }}%货款交付甲方账户。
+                                </p>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <ol>
+                                {% if unit.processes|length < 1 %}
+                                     <li>未进入审批流程</li>
+                                {% else %}
+                                  {% for p in unit.processes %}
+                                      {% if p.proccess.paramID == 10 %}
+                                          <li>已上传终稿，等待项目经理审批 &nbsp;&nbsp;&nbsp;({{ p.time | date:'Y-m-d' }})</li>
+                                      {% endif %}
+                                      {% if p.proccess.paramID == 11 %}
+                                          <li>项目经理已审批，等待上级签字 &nbsp;&nbsp;&nbsp;({{ p.time | date:'Y-m-d' }})</li>
+                                      {% endif %}
+                                      {% if p.proccess.paramID == 12 %}
+                                          <li>上级已审批，请邮寄乙方等待审批 &nbsp;&nbsp;&nbsp;({{ p.time | date:'Y-m-d' }})</li>
+                                      {% endif %}
+                                   {% endfor %}
+                                {% endif %}
+                            </ol>
+                        </td>
+                        <td>
+                            {% if request.session.uKind == "PJ" %}
+                                {% if unit.contract.state.paramID == 9 %}
+                                    合同正在洽谈中，请等待
+                                {% endif %}
+                                {% if unit.contract.state.paramID == 10 %}
+                                    <button class="btn btn-outline-primary btn-sm" type="button" onclick="location.href='http://127.0.0.1:8000/downloadFile/{{ unit.contract.contractDocPath }}'" >下载审阅</button>
+                                    <br/>
+                                    <button class="btn btn-outline-success btn-sm" type="button" onclick="firstSign({{ unit.contract.contractID }})">同意审批</button>
+                                {% endif %}
+                                {% if unit.contract.state.paramID == 11 %}
+                                    等待我方上级领导审批
+                                {% endif %}
+                                {% if unit.contract.state.paramID == 12 %}
+                                    <p>我方领导已签字，<a href="http://127.0.0.1:8000/downloadFile/{{ unit.contract.contractDocPath }}">下载</a>最终签字版本，邮寄客户签字。</p>
+                                    <button class="btn btn-outline-success btn-sm" type="button" id="commitBtn" onclick="receiveSignedContract({{ unit.contract.contractID }})">已收到双签合同</button>
+                                {% endif %}
+                            {% elif request.session.uKind == "GM" %}
+                                 {% if unit.contract.state.paramID == 11 %}
+                                    <button class="btn btn-outline-primary btn-sm" type="button" onclick="location.href='http://127.0.0.1:8000/downloadFile/{{ unit.contract.contractDocPath }}'">下载审阅</button>
+                                    <br/>
+                                     <button class="btn btn-outline-success btn-sm" type="button" onclick="secondSign({{ unit.contract.contractID }})">同意审批</button>
+                                {% endif %}
+                                {% if unit.contract.state.paramID < 11 %}
+                                    合同正在洽谈协商中
+                                {% endif %}
+                                {% if unit.contract.state.paramID == 12 %}
+                                    等待客户签字
+                                {% endif %}
+                            {% else %}
+                                {% if unit.contract.state.paramID == 9 %}
+                                    <button class="btn btn-outline-success btn-sm" type="button" onclick="applyForFirstCheck({{ unit.contract.contractID }})">申请审批</button>
+                                {% endif %}
+                                {% if unit.contract.state.paramID == 10 %}
+                                    等待项目经理审批中
+                                {% endif %}
+                                {% if unit.contract.state.paramID == 11 %}
+                                    等待领导审批中
+                                {% endif %}
+                                {% if unit.contract.state.paramID == 12 %}
+                                    等待客户签字中
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tbody>
+          </table>
+        </div>
+    </div>
+</div>
+<!--/.col-->
+</div>
+{%endblock%}
+{% block extraCSS %}
+<style>
+      .shortInput{
+          border:2px solid #ffffff;
+          width:30px;
+          height: 20px;
+      }
+</style>
+<script type="text/javascript">  
+    function applyForFirstCheck(conID) {
+        var con = confirm("确认合同参数输入无误，开始审批流程？")
+        if(con){
+            var finalverID = $('#finalverID').val();
+            var contractPrice = $('#contractPrice').val();
+            var firTimeSpan = $('#firTimeSpan').val();
+            var firPartPrice = $('#firPartPrice').val();
+            var productTime = $('#productTime').val();
+            var secTimeSpan = $('#secTimeSpan').val();
+            var secPartPrice = $('#secPartPrice').val();
+            var conveyTime = $('#conveyTime').val();
+            var thrTimeSpan = $('#thrTimeSpan').val();
+            var thrPartPrice = $('#thrPartPrice').val();
+            var path = 'http://127.0.0.1:8000/applyForFirstCheck/'+conID+'/'+finalverID+'/'+contractPrice+'/'+firTimeSpan
+                        +'/'+firPartPrice+'/'+productTime+'/'+secTimeSpan+'/'+secPartPrice+'/'+conveyTime+'/'+thrTimeSpan
+                        +'/'+thrPartPrice;
+            window.location.href = path
+        }
+    }
+    function firstSign(conID) {
+        var con1 = confirm("确定该合同终稿审批通过？")
+        if(con1){
+            var firPath = 'http://127.0.0.1:8000/contractFirstSign/'+conID
+            location.href = firPath
+        }
+    }
+    function secondSign(conID) {
+        var con2 = confirm("确定该合同终稿审批通过？")
+        if(con2){
+            var secPath = 'http://127.0.0.1:8000/contractSecondSign/'+conID
+            location.href = secPath
+        }
+    }
+    function receiveSignedContract(conID) {
+        var con3 = confirm("是否确认收到双签协议？若确认，立即进入生产履约流程")
+        if(con3){
+            var signPath = 'http://127.0.0.1:8000/receiveSignedContract/'+conID
+            location.href = signPath
+        }
+
+    }
+</script>
+{% endblock extraCSS %}

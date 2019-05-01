@@ -40,6 +40,28 @@ urlpatterns =[
     url(r'^answerURS_Page$', views.answerURS_Page, name='answerURS_Page'),
     url(r'^commitURS/(?P<URS_ID>[0-9]*)$', views.commitURS, name='commitURS'),
     url(r'^refuseURS/(?P<URS_ID>[0-9]*)/(?P<reason>.+)$', views.refuseURS, name='refuseURS'),
+    url(r'^adminContractDoc$', views.adminContractDoc, name='adminContractDoc'),
+    url(r'^uploadContract$', views.uploadContract, name='uploadContract'),
+    url(r'^downLoadFirstVersionContract/(?P<conID>[0-9]*)$', views.downLoadFirstVersionContract, name='downLoadFirstVersionContract'),
+    url(r'^downloadFile/(?P<path>.+)$', views.downloadFile, name='downloadFile'),
+    url(r'^toContractCheck$', views.toContractCheck, name='toContractCheck'),
+    url(r'^applyForFirstCheck/(?P<conID>[0-9]*)/(?P<finalverID>[0-9]*)/(?P<contractPrice>[0-9]*)/(?P<firTimeSpan>[0-9]*)/(?P<firPartPrice>[0-9]*)/(?P<productTime>[0-9]*)/(?P<secTimeSpan>[0-9]*)/(?P<secPartPrice>[0-9]*)/(?P<conveyTime>[0-9]*)/(?P<thrTimeSpan>[0-9]*)/(?P<thrPartPrice>[0-9]*)$',
+        views.applyForFirstCheck, name='applyForFirstCheck'),
+    url(r'^contractFirstSign/(?P<conID>[0-9]*)$', views.contractFirstSign, name='contractFirstSign'),
+    url(r'^contractSecondSign/(?P<conID>[0-9]*)$', views.contractSecondSign, name='contractSecondSign'),
+    url(r'^receiveSignedContract/(?P<conID>[0-9]*)$', views.receiveSignedContract, name='receiveSignedContract'),
+    url(r'^adminReceiveMoney/$', views.adminReceiveMoney, name='adminReceiveMoney'),
+    url(r'^reciveMoney/(?P<conID>[0-9]*)$', views.reciveMoney, name='reciveMoney'),
+
+
+
+
+
+
+
+
+
+
 
 
 

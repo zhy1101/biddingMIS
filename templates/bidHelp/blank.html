@@ -44,7 +44,7 @@
 
     <div class="app-body">
         <div class="sidebar">
-{% if request.session.uKind == 'PJ'%}
+{% if request.session.uKind == 'PJ' or request.session.uKind == 'GM'%}
 		 <nav class="sidebar-nav">
 						<ul class="nav">
 							<li class="nav-item">
@@ -117,10 +117,10 @@
 										<a class="nav-link" href="http://127.0.0.1:8000/answerURS_Page" target="_top"><i class="icon-pencil "></i>应答客户额外需求</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="pages-500.html" target="_top"><i class="icon-pencil "></i>合同文件管理</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminContractDoc" target="_top"><i class="icon-pencil "></i>合同文件管理</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="pages-500.html" target="_top"><i class="icon-pencil "></i>审批合同</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/toContractCheck" target="_top"><i class="icon-pencil "></i>审批合同 & 签署</a>
 									</li>
 								</ul>
 							</li>
@@ -129,13 +129,13 @@
 								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-target "></i>履约管理</a>
 								<ul class="nav-dropdown-items">
 									<li class="nav-item">
-										<a class="nav-link" href="pages-login.html" target="_top"><i class="icon-target "></i>货款到账通知</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminReceiveMoney" target="_top"><i class="icon-target "></i>收款进度管理</a>
+									</li>
+                                    <li class="nav-item">
+										<a class="nav-link" href="http://127.0.0.1:8000/adminReceiveMoney" target="_top"><i class="icon-target "></i>验收进度管理</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="pages-register.html" target="_top"><i class="icon-target "></i>临期警报</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="pages-404.html" target="_top"><i class="icon-target "></i>逾期警报</a>
+										<a class="nav-link" href="pages-register.html" target="_top"><i class="icon-target "></i>警报管理</a>
 									</li>
 								</ul>
 							</li>

@@ -1,10 +1,11 @@
 #coding=utf-8
 
 from django.shortcuts import render,redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, StreamingHttpResponse, FileResponse
 from django.urls import reverse
 import bidHelp.models
 import bidHelp.Gray_model
+import bidHelp.fastGetter
 from django.db.models import Q
 from django.core.paginator import Paginator
 import datetime
@@ -438,7 +439,7 @@ def informWin(request,pID):
     project.save()
     bidHelp.models.ProjectProccess.objects.create(pID=project, proccess=state,
                                                   time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    bidHelp.models.Contract.objects.create(pID=project,state=project.pState,newVerID=1)
+    bidHelp.models.Contract.objects.create(pID=project,state=project.pState,newVerID=0)
     return HttpResponseRedirect("/adminBidOpen")
 
 def informLost (request,pID):
@@ -521,6 +522,204 @@ def refuseURS(request,URS_ID,reason):
     urs.remark =reason
     urs.save()
     return HttpResponseRedirect("/answerURS_Page")
+
+def adminContractDoc(request):
+    contracts = bidHelp.models.Contract.objects.filter(state__paramID__lt=21)
+    pro_versionRecords = []
+    for contract in contracts:
+        unit={}
+        unit['project'] = contract.pID
+        versionRecords = bidHelp.models.VersionRecord.objects.filter(contractID__contractID=contract.contractID).order_by('-contractID','verID')
+        unit['versionRecords'] = versionRecords
+        pro_versionRecords.append(unit)
+    return render(request,'bidHelp/SignContract/adminContractDoc.html',{'contracts':contracts,'pro_versionRecords':pro_versionRecords})
+
+def uploadContract(request):  # 上传文件
+    contractID = request.POST.get('uploadContractID')
+    contract = bidHelp.models.Contract.objects.get(contractID = contractID)
+    contract.newVerID = contract.newVerID+1
+    contract.save()
+    if request.method == 'POST':
+        try:
+            handle_uploaded_file(request.FILES.get("file-input", None),contract.pID.pName,contract.newVerID)
+            path = contract.pID.pName+'_第'+ str(contract.newVerID) +'版合同.zip'
+            bidHelp.models.VersionRecord.objects.create(contractID=contract,verID=contract.newVerID,docPath=path,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            return HttpResponseRedirect('/adminContractDoc')
+        except Exception:
+            return HttpResponseRedirect('/adminContractDoc')
+    return HttpResponseRedirect('/adminContractDoc')
+
+def handle_uploaded_file(file,pName,verID):
+    if not os.path.exists('upload/'):
+        os.mkdir('upload/')
+        # print file.name
+    with open('upload/' + pName+'_第'+ str(verID) +'版合同.zip', 'wb+') as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+        destination.close()
+
+
+def downLoadFirstVersionContract(request,conID):
+    def file_iterator(file_name, chunk_size=512):
+        print(file_name, '******************')
+        with open(file_name, 'rb') as f:
+            if f:
+                yield f.read(chunk_size)
+                print('下载完成')
+            else:
+                print('未完成下载')
+    the_file_name = 'E:/biddingMIS/upload/firstVersionContract.zip'
+    contract = bidHelp.models.Contract.objects.get(contractID = conID)
+    if(contract.newVerID==0):
+        contract.newVerID=1
+        contract.save()
+        bidHelp.models.VersionRecord.objects.create(contractID = contract,verID=1,docPath='firstVersionContract.zip',time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') )
+        response = StreamingHttpResponse(file_iterator(the_file_name))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="firstVersionContract.zip"'
+    else:
+        response = StreamingHttpResponse(file_iterator(the_file_name))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="firstVersionContract.zip"'
+    return response
+
+def downloadFile(request,path):
+    def file_iterator(file_name, chunk_size=512):
+        with open(file_name, 'rb') as f:
+            if f:
+                yield f.read(chunk_size)
+                print('下载完成')
+            else:
+                print('未完成下载')
+    response = StreamingHttpResponse(file_iterator('E:/biddingMIS/upload/'+path))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = 'attachement;'
+    return response
+
+def toContractCheck(request):
+    uID = request.session.get('uID')
+    user = bidHelp.models.User.objects.get(uID=uID)
+    if(user.uKind=='PJ' or user.uKind=='GM'):
+        contracts = bidHelp.models.Contract.objects.filter(state__paramID__in=[9,10,11,12])
+    else:
+        personalPro = bidHelp.fastGetter.getProjectsByUID(uID)
+        myProID = []
+        for myPro in personalPro:
+            myProID.append(myPro.pID)
+        contracts = bidHelp.models.Contract.objects.filter(pID__pID__in=myProID,state__paramID__in=[9,10,11,12])
+
+    contract_processes = []
+    for con in contracts:
+        unit={}
+        unit['contract'] = con
+        processes = bidHelp.models.ProjectProccess.objects.filter(pID__pID=con.pID.pID,proccess__paramID__in=[10,11,12])
+        unit['processes'] = processes
+        contract_processes.append(unit)
+    return  render(request, 'bidHelp/SignContract/contractCheckPage.html',{'contract_processes':contract_processes})
+
+def applyForFirstCheck(request,conID,finalverID,contractPrice,firTimeSpan,firPartPrice,productTime,secTimeSpan,secPartPrice,conveyTime,thrTimeSpan,thrPartPrice):
+    contract = bidHelp.models.Contract.objects.get(contractID=conID)
+    contract.newVerID = finalverID
+    contract.contractDocPath = bidHelp.models.VersionRecord.objects.get(contractID__contractID=conID,verID=finalverID).docPath
+    contract.contractPrice = contractPrice
+    contract.firPartPrice = firPartPrice
+    contract.firTimeSpan = firTimeSpan
+    contract.productTime = productTime
+    contract.secTimeSpan = secTimeSpan
+    contract.secPartPrice = secPartPrice
+    contract.thrTimeSpan = thrTimeSpan
+    contract.thrPartPrice = thrPartPrice
+    contract.conveyTime = conveyTime
+    state = bidHelp.models.StateParam.objects.get(paramID=10)
+    contract.state = state
+    contract.pID.pState = state
+    contract.save()
+    contract.pID.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=contract.pID,proccess=state,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return  HttpResponseRedirect('/toContractCheck')
+
+def contractFirstSign(request,conID):
+    contract = bidHelp.models.Contract.objects.get(contractID=conID)
+    changeState = bidHelp.models.StateParam.objects.get(paramID=11)
+    contract.state = changeState
+    contract.pID.pState = changeState
+    contract.pID.save()
+    contract.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=contract.pID,proccess=changeState,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return  HttpResponseRedirect('/toContractCheck')
+
+def contractSecondSign(request,conID):
+    contract = bidHelp.models.Contract.objects.get(contractID=conID)
+    changeState = bidHelp.models.StateParam.objects.get(paramID=12)
+    contract.state = changeState
+    contract.pID.pState = changeState
+    contract.pID.save()
+    contract.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=contract.pID,proccess=changeState,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return  HttpResponseRedirect('/toContractCheck')
+
+def receiveSignedContract(request,conID):
+    contract = bidHelp.models.Contract.objects.get(contractID=conID)
+    changeState = bidHelp.models.StateParam.objects.get(paramID=13)
+    contract.state = changeState
+    contract.pID.pState = changeState
+    contract.pID.save()
+    contract.signTime = datetime.datetime.now().strftime('%Y-%m-%d')
+    contract.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=contract.pID, proccess=changeState,
+                                                  time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return HttpResponseRedirect('/adminReceiveMoney')
+
+def adminReceiveMoney(request):
+    projects = bidHelp.models.Project.objects.filter(pState__paramID__in = [13,14,15,16,17,18,19])
+    pro_contract_processInfor = []
+    for project in projects:
+        unit = {}
+        contract = bidHelp.fastGetter.getContractByPID(project.pID)
+        unit['pro'] = project
+        unit['contract'] = contract
+        firMoneyAmount = int(contract.contractPrice) * int(contract.firPartPrice) / 100
+        secMoneyAmount = int(contract.contractPrice) * int(contract.secPartPrice) / 100
+        thrMoneyAmount = int(contract.contractPrice) * int(contract.thrPartPrice) / 100
+        oneAndTwoMoneyAmount = firMoneyAmount + secMoneyAmount
+        if(project.pState.paramID==13):
+            timeLimit =(contract.signTime+datetime.timedelta(days=contract.firTimeSpan)).strftime('%Y{y}%m{m}%d{d}').format(y='年',m='月',d='日')
+            processInfor = '<p>未收款</p><p style = "color:blue">于'+timeLimit+'前，应支付首期货款：¥'+str(firMoneyAmount)+'</p>'
+            unit['processInfor'] = processInfor
+        elif(project.pState.paramID > 13 & project.pState.paramID < 16):
+            processInfor = '<p>已收首期款，共¥'+str(firMoneyAmount)+'</p><p>正在生产中，等待FAT验收</p>'
+            unit['processInfor'] = processInfor
+        elif(project.pState.paramID==16):
+            overFATTime = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,proccess__paramID=16).time
+            timeLimit =(overFATTime+datetime.timedelta(days=contract.secTimeSpan)).strftime('%Y{y}%m{m}%d{d}').format(y='年',m='月',d='日')
+            processInfor ='<p>已收首期款，共¥'+str(firMoneyAmount)+'</p><p style = "color:blue">于'+timeLimit+'前，应支付中期货款：¥'+str(secMoneyAmount)+'</p>'
+            unit['processInfor'] = processInfor
+        elif(project.pState.paramID > 16 & project.pState.paramID < 19):
+            processInfor = '<p>已收中期款，共¥'+str(oneAndTwoMoneyAmount)+'</p><p>正在运输中，等待SAT验收</p>'
+            unit['processInfor'] = processInfor
+        elif(project.pState.paramID==16):
+            overSATTime = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,proccess__paramID=19).time
+            timeLimit =(overSATTime+datetime.timedelta(days=contract.thrTimeSpan)).strftime('%Y{y}%m{m}%d{d}').format(y='年',m='月',d='日')
+            processInfor ='<p>已收中期款，共¥'+str(oneAndTwoMoneyAmount)+'</p><p style = "color:blue">于'+timeLimit+'前，应支付中期货款：¥'+str(thrMoneyAmount)+'</p>'
+            unit['processInfor'] = processInfor
+
+        pro_contract_processInfor.append(unit)
+
+    return  render(request,'bidHelp/ExerciseAgreement/adminReceiveMoney.html',{'pro_contract_processInfor':pro_contract_processInfor})
+
+def reciveMoney(request,conID):
+    contract = bidHelp.models.Contract.objects.get(contractID=conID)
+    changeState = bidHelp.models.StateParam.objects.get(paramID=contract.state.paramID+1)
+    contract.state = changeState
+    contract.pID.pState = changeState
+    contract.save()
+    contract.pID.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=contract.pID,proccess=changeState,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') )
+    return HttpResponseRedirect('/adminReceiveMoney')
+
+
+
+
 
 
 

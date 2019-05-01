@@ -1,0 +1,121 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>合同文件管理</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-search "></i> 生成初版合同
+            </div>
+            <div class="card-block">
+               <div class="form-group row">
+                    <div class="col-md-9">
+                        <select id="contractID_firstVersion" name="contractID_firstVersion" class="form-control form-control">
+                            <option value="0">选择项目</option>
+                            {% for contract in contracts %}
+                            <option value="{{ contract.contractID }}">{{ contract.pID.pName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                         <span class="input-group-btn">
+                                <button type="button" class="btn btn-primary" id="searchBtn" onclick="downloadFile()">获取初版合同</button>
+                         </span>
+                    </div>
+               </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="margin-top: 40px">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-search "></i> 合同版本更新
+            </div>
+            <input type="hidden" id="upload_feedback_msg" value="{{ upload_msg }}">
+            <div class="card-block">
+                <form id="upfileForm" method="post" action="http://127.0.0.1:8000/uploadContract" enctype="multipart/form-data">
+                <div class="form-group row">
+                    <label class="col-md-3 form-control-label" for="select">对应项目</label>
+                    <div class="col-md-9">
+                        <select id="uploadContract" name="uploadContractID" class="form-control">
+                            <option value="0">--请选择--</option>
+                            {% for contract in contracts%}
+                            <option value="{{ contract.contractID }}">{{ contract.pID.pName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3 form-control-label" for="file-input">选择文件(请上传压缩后的文件)</label>
+                    <div class="col-md-6">
+                        <input type="file" id="file-input" name="file-input">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="submit" id="uploadBtn" form="upfileForm" value="上传合同"/>
+                    </div>
+                </div>
+                </form>
+               </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 40px">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-search "></i> 合同历史版本记录
+            </div>
+            <div class="card-block">
+               <table class="table table-bordered table-striped table-condensed">
+                    <thead>
+                        <tr>
+                            <th>项目名称</th>
+                            <th>版本号(点击即可下载)</th>
+                            <th>上传时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unit in pro_versionRecords %}
+                        <tr>
+                            <td>{{ unit.project.pName }}</td>
+                            <td>
+                                <ul>
+                                    {% for versionRecord in unit.versionRecords %}
+                                        <li><a href="http://127.0.0.1:8000/downloadFile/{{ versionRecord.docPath }}" >第{{ versionRecord.verID }}版合同</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <ul style="list-style-type:none">
+                                    {% for versionRecord in unit.versionRecords %}
+                                        <li>{{ versionRecord.time | date:"Y-m-d" }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock mainPanel%}
+{% block extraCSS %}
+    <script>
+    function downloadFile() {
+        var con = confirm("是否生成并下载初版合同？")
+        if(con){
+            var conID = $('#contractID_firstVersion').val();
+            var path = "http://127.0.0.1:8000/downLoadFirstVersionContract/"+conID;
+            location.href = path
+        }
+    }
+    </script>
+{% endblock extraCSS%}
