@@ -21,9 +21,6 @@
      {% endblock extraCSS %}
 
 </head>
-
-
-
 <body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
     <header class="app-header navbar">
         <button class="navbar-toggler mobile-sidebar-toggler hidden-lg-up" type="button">☰</button>
@@ -34,7 +31,7 @@
             </li>
 
             <li class="nav-item px-1">
-                <a class="nav-link" href="#">项目进度总览</a>
+                <a class="nav-link" href="http://127.0.0.1:8000/index">项目进度总览</a>
             </li>
             <li class="nav-item px-1">
                 <a class="nav-link" href="#">用户设置</a>
@@ -48,7 +45,7 @@
 		 <nav class="sidebar-nav">
 						<ul class="nav">
 							<li class="nav-item">
-								<a class="nav-link" href="index.html"><i class="icon-speedometer"></i> 项目进度总览</a>
+								<a class="nav-link" href="http://127.0.0.1:8000/index"><i class="icon-speedometer"></i> 项目进度总览</a>
 							</li>
 							<li class="nav-title">
 								投标管理
@@ -132,10 +129,10 @@
 										<a class="nav-link" href="http://127.0.0.1:8000/adminReceiveMoney" target="_top"><i class="icon-target "></i>收款进度管理</a>
 									</li>
                                     <li class="nav-item">
-										<a class="nav-link" href="http://127.0.0.1:8000/adminReceiveMoney" target="_top"><i class="icon-target "></i>验收进度管理</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminProductConvey" target="_top"><i class="icon-target "></i>验收进度管理</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="pages-register.html" target="_top"><i class="icon-target "></i>警报管理</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminWarning" target="_top"><i class="icon-target "></i>警报管理</a>
 									</li>
 								</ul>
 							</li>
@@ -147,7 +144,7 @@
 			 <nav class="sidebar-nav">
 						<ul class="nav">
 							<li class="nav-item">
-								<a class="nav-link" href="index.html"><i class="icon-speedometer"></i> 项目进度总览</a>
+								<a class="nav-link" href="http://127.0.0.1:8000/index"><i class="icon-speedometer"></i> 项目进度总览</a>
 							</li>
 							<li class="nav-title">
 								投标管理
@@ -156,7 +153,7 @@
 								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-puzzle"></i> 前期筹备</a>
 								<ul class="nav-dropdown-items">
 									<li class="nav-item">
-										<a class="nav-link" href="components-social-buttons.html"><i class="icon-puzzle"></i> 客户审查</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/toCustomerList"><i class="icon-puzzle"></i> 客户审查</a>
 									</li>
 								</ul>
 							</li>
@@ -167,7 +164,7 @@
 										<a class="nav-link" href="http://127.0.0.1:8000/showBidRequestforST/{{ session.uID }}"><i class="icon-book-open "></i>查询要求清单</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>标价预测</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/toBidPredictPage"><i class="icon-book-open "></i>标价预测</a>
 									</li>
 								</ul>
 							</li>
@@ -178,7 +175,7 @@
 										<a class="nav-link" href="http://127.0.0.1:8000/adminBidOpen"><i class="icon-flag "></i>开标通知 & 结果汇报</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-flag "></i>查询开标结果</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/recentBidResult"><i class="icon-flag "></i>查询开标结果</a>
 									</li>
 								</ul>
 							</li>
@@ -195,13 +192,10 @@
 								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-pencil "></i>合同签署</a>
 								<ul class="nav-dropdown-items">
 									<li class="nav-item">
-										<a class="nav-link" href="pages-login.html" target="_top"><i class="icon-pencil "></i>额外需求申请</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminExtralRequest" target="_top"><i class="icon-pencil "></i>额外需求管理</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="pages-404.html" target="_top"><i class="icon-pencil "></i>查看额外需求列表</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="pages-500.html" target="_top"><i class="icon-pencil "></i>合同文件管理</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminContractDoc" target="_top"><i class="icon-pencil "></i>合同文件管理</a>
 									</li>
 								</ul>
 							</li>
@@ -209,13 +203,13 @@
 								<a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-target "></i>履约管理</a>
 								<ul class="nav-dropdown-items">
 									<li class="nav-item">
-										<a class="nav-link" href="pages-login.html" target="_top"><i class="icon-target "></i>货款到账通知</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminReceiveMoney" target="_top"><i class="icon-target "></i>收款进度管理</a>
+									</li>
+                                    <li class="nav-item">
+										<a class="nav-link" href="http://127.0.0.1:8000/adminProductConvey" target="_top"><i class="icon-target "></i>验收进度管理</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link" href="pages-register.html" target="_top"><i class="icon-target "></i>临期警报</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="pages-404.html" target="_top"><i class="icon-target "></i>逾期警报</a>
+										<a class="nav-link" href="http://127.0.0.1:8000/adminWarning" target="_top"><i class="icon-target "></i>警报管理</a>
 									</li>
 								</ul>
 							</li>
@@ -227,7 +221,7 @@
 		 <nav class="sidebar-nav">
              <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="index.html"><i class="icon-speedometer"></i> 项目进度总览</a>
+                    <a class="nav-link" href="http://127.0.0.1:8000/index"><i class="icon-speedometer"></i> 项目进度总览</a>
                 </li>
                 <li class="nav-title">
                     投标管理
@@ -236,7 +230,7 @@
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-puzzle"></i> 前期筹备</a>
                     <ul class="nav-dropdown-items">
                         <li class="nav-item">
-                            <a class="nav-link" href="components-social-buttons.html"><i class="icon-puzzle"></i> 客户审查</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/toCustomerList"><i class="icon-puzzle"></i> 客户审查</a>
                         </li>
                     </ul>
                 </li>
@@ -247,13 +241,13 @@
                             <a class="nav-link" href="http://127.0.0.1:8000/showBidRequestforST/{{ session.uID }}"><i class="icon-book-open "></i>查询要求清单</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>一键生成基础标书文档</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/tofastBidDocPage"><i class="icon-book-open "></i>一键生成基础标书文档</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>投标保函管理</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/adminBankGuarantee"><i class="icon-book-open "></i>投标保函管理</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-book-open "></i>标价预测</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/toBidPredictPage"><i class="icon-book-open "></i>标价预测</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="http://127.0.0.1:8000/adminBidDocCheck"><i class="icon-book-open "></i>标书审批</a>
@@ -264,7 +258,7 @@
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-flag "></i>开标管理</a>
                     <ul class="nav-dropdown-items">
                         <li class="nav-item">
-                            <a class="nav-link" href="icons-simple-line-icons.html"><i class="icon-flag "></i>查询开标结果</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/recentBidResult"><i class="icon-flag "></i>查询开标结果</a>
                         </li>
                     </ul>
                 </li>
@@ -279,13 +273,10 @@
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-pencil "></i>合同签署</a>
                     <ul class="nav-dropdown-items">
                         <li class="nav-item">
-                            <a class="nav-link" href="pages-500.html" target="_top"><i class="icon-pencil "></i>一键生成初版合同</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/adminExtralRequest" target="_top"><i class="icon-pencil "></i>额外需求管理</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="pages-404.html" target="_top"><i class="icon-pencil "></i>查看额外需求列表</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="pages-500.html" target="_top"><i class="icon-pencil "></i>合同文件管理</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/adminContractDoc" target="_top"><i class="icon-pencil "></i>合同文件管理</a>
                         </li>
                     </ul>
                 </li>
@@ -293,13 +284,13 @@
                     <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-target "></i>履约管理</a>
                     <ul class="nav-dropdown-items">
                         <li class="nav-item">
-                            <a class="nav-link" href="pages-login.html" target="_top"><i class="icon-target "></i>货款到账通知</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/adminReceiveMoney" target="_top"><i class="icon-target "></i>收款进度管理</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="pages-register.html" target="_top"><i class="icon-target "></i>临期警报</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/adminProductConvey" target="_top"><i class="icon-target "></i>验收进度管理</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="pages-404.html" target="_top"><i class="icon-target "></i>逾期警报</a>
+                            <a class="nav-link" href="http://127.0.0.1:8000/adminWarning" target="_top"><i class="icon-target "></i>警报管理</a>
                         </li>
                     </ul>
                 </li>

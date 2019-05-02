@@ -51,47 +51,12 @@ urlpatterns =[
     url(r'^contractSecondSign/(?P<conID>[0-9]*)$', views.contractSecondSign, name='contractSecondSign'),
     url(r'^receiveSignedContract/(?P<conID>[0-9]*)$', views.receiveSignedContract, name='receiveSignedContract'),
     url(r'^adminReceiveMoney/$', views.adminReceiveMoney, name='adminReceiveMoney'),
-    url(r'^reciveMoney/(?P<conID>[0-9]*)$', views.reciveMoney, name='reciveMoney'),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    url(r'^reciveMoney/(?P<conID>[0-9]*)/(?P<type>.+)$', views.reciveMoney, name='reciveMoney'),
+    url(r'^adminProductConvey$', views.adminProductConvey, name='adminProductConvey'),
+    url(r'^uploadAcceptenceDoc/(?P<conID>[0-9]*)$', views.uploadAcceptenceDoc, name='uploadAcceptenceDoc'),
+    url(r'^adminWarning$', views.adminWarning, name='adminWarning'),
+    url(r'^overProject/(?P<pID>[0-9]*)$', views.overProject, name='overProject'),
+    url(r'^breakUpProject/(?P<pID>[0-9]*)$', views.breakUpProject, name='breakUpProject'),
 
 
 ]

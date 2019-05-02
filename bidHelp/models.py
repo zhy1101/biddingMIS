@@ -9,9 +9,6 @@ class User(models.Model):
     uPassword = models.CharField(max_length=10,blank=True)
     uPhone = models.CharField(max_length=20,blank=True)
     uWorkTime = models.IntegerField(blank=True)
-    class Meta:
-        managed = True
-        db_table = 'bidhelp_user'
 
 class Customer(models.Model):
     cID = models.AutoField(primary_key=True)

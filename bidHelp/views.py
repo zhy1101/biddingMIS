@@ -18,6 +18,7 @@ from skimage import io,data
 import bidHelp.Gray_model
 import bidHelp.Exponential_Smooth
 from django.http import JsonResponse
+import zipfile
 
 
 def postlogin(request):
@@ -39,7 +40,22 @@ def index(request):
     uID = request.session.get('uID')
     userSet = bidHelp.models.User.objects.filter(uID=uID)
     user = userSet[0]
-    return render(request, 'bidHelp/index.html', {'uKind': user.uKind})
+    projects_processNum = []
+    if(user.uKind=='PJ' or user.uKind=='GM'):
+        projrcts  = bidHelp.models.Project.objects.filter(pState_id__lt=21)
+        for pro in projrcts:
+            unit = {}
+            unit['pro'] = pro
+            unit['processNum'] = (int(pro.pState_id)-1)*5
+            projects_processNum.append(unit)
+    else:
+       sps = bidHelp.models.Staff_Project.objects.filter(staff__uID=uID,project__pState_id__lt=21)
+       for sp in sps:
+           unit = {}
+           unit['pro'] = sp.project
+           unit['processNum'] = (int(sp.project.pState_id)-1)*5
+           projects_processNum.append(unit)
+    return render(request, 'bidHelp/index.html', {'uKind': user.uKind,'projects_processNum':projects_processNum})
 
 def showCustomerDistribution(request):
     return render(request, 'bidHelp/Preparation/CustomerList.html')
@@ -682,11 +698,12 @@ def adminReceiveMoney(request):
         secMoneyAmount = int(contract.contractPrice) * int(contract.secPartPrice) / 100
         thrMoneyAmount = int(contract.contractPrice) * int(contract.thrPartPrice) / 100
         oneAndTwoMoneyAmount = firMoneyAmount + secMoneyAmount
+        print(project.pState.paramID)
         if(project.pState.paramID==13):
             timeLimit =(contract.signTime+datetime.timedelta(days=contract.firTimeSpan)).strftime('%Y{y}%m{m}%d{d}').format(y='年',m='月',d='日')
             processInfor = '<p>未收款</p><p style = "color:blue">于'+timeLimit+'前，应支付首期货款：¥'+str(firMoneyAmount)+'</p>'
             unit['processInfor'] = processInfor
-        elif(project.pState.paramID > 13 & project.pState.paramID < 16):
+        elif(project.pState.paramID > 13 and project.pState.paramID <16):
             processInfor = '<p>已收首期款，共¥'+str(firMoneyAmount)+'</p><p>正在生产中，等待FAT验收</p>'
             unit['processInfor'] = processInfor
         elif(project.pState.paramID==16):
@@ -694,20 +711,20 @@ def adminReceiveMoney(request):
             timeLimit =(overFATTime+datetime.timedelta(days=contract.secTimeSpan)).strftime('%Y{y}%m{m}%d{d}').format(y='年',m='月',d='日')
             processInfor ='<p>已收首期款，共¥'+str(firMoneyAmount)+'</p><p style = "color:blue">于'+timeLimit+'前，应支付中期货款：¥'+str(secMoneyAmount)+'</p>'
             unit['processInfor'] = processInfor
-        elif(project.pState.paramID > 16 & project.pState.paramID < 19):
+        elif(project.pState.paramID > 16 and project.pState.paramID < 19):
             processInfor = '<p>已收中期款，共¥'+str(oneAndTwoMoneyAmount)+'</p><p>正在运输中，等待SAT验收</p>'
             unit['processInfor'] = processInfor
-        elif(project.pState.paramID==16):
+        elif(project.pState.paramID==19):
             overSATTime = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,proccess__paramID=19).time
             timeLimit =(overSATTime+datetime.timedelta(days=contract.thrTimeSpan)).strftime('%Y{y}%m{m}%d{d}').format(y='年',m='月',d='日')
-            processInfor ='<p>已收中期款，共¥'+str(oneAndTwoMoneyAmount)+'</p><p style = "color:blue">于'+timeLimit+'前，应支付中期货款：¥'+str(thrMoneyAmount)+'</p>'
+            processInfor ='<p>已收中期款，共¥'+str(oneAndTwoMoneyAmount)+'</p><p style = "color:blue">于'+timeLimit+'前，应支付尾款：¥'+str(thrMoneyAmount)+'</p>'
             unit['processInfor'] = processInfor
 
         pro_contract_processInfor.append(unit)
 
     return  render(request,'bidHelp/ExerciseAgreement/adminReceiveMoney.html',{'pro_contract_processInfor':pro_contract_processInfor})
 
-def reciveMoney(request,conID):
+def reciveMoney(request,conID,type):
     contract = bidHelp.models.Contract.objects.get(contractID=conID)
     changeState = bidHelp.models.StateParam.objects.get(paramID=contract.state.paramID+1)
     contract.state = changeState
@@ -715,9 +732,206 @@ def reciveMoney(request,conID):
     contract.save()
     contract.pID.save()
     bidHelp.models.ProjectProccess.objects.create(pID=contract.pID,proccess=changeState,time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') )
-    return HttpResponseRedirect('/adminReceiveMoney')
+    if(type=='t1'):
+         return HttpResponseRedirect('/adminReceiveMoney')
+    else:
+        return HttpResponseRedirect('/adminProductConvey')
+
+def adminProductConvey(request):
+    projects = bidHelp.models.Project.objects.filter(pState__paramID__in=[14, 15, 16, 17, 18])
+    pro_contract_processInfor = []
+    for project in projects:
+        unit = {}
+        contract = bidHelp.fastGetter.getContractByPID(project.pID)
+        unit['pro'] = project
+        unit['contract'] = contract
+        if (project.pState.paramID == 14):
+            timeLimit = (contract.signTime + datetime.timedelta(days=contract.productTime)).strftime(
+                '%Y{y}%m{m}%d{d}').format(y='年', m='月', d='日')
+            processInfor = '<p>生产进行中</p><p style = "color:blue">于' + timeLimit + '前，申请进行FAT验收</p>'
+            unit['processInfor'] = processInfor
+        elif (project.pState.paramID ==15):
+            processInfor = '<p>FAT验收中，验收结束后请上传相应FAT验收文件</p>'
+            unit['processInfor'] = processInfor
+        elif (project.pState.paramID == 17):
+            time = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,proccess__paramID=17).time
+            timeLimit = (time + datetime.timedelta(days=contract.conveyTime)).strftime(
+                '%Y{y}%m{m}%d{d}').format(y='年', m='月', d='日')
+            processInfor = '<p>运输进行中</p><p style = "color:blue">于' + timeLimit + '前完成运输安装并开始SAT验收</p>'
+            unit['processInfor'] = processInfor
+        elif (project.pState.paramID == 18):
+            processInfor = '<p>SAT验收中，验收结束后请上传相应SAT验收文件</p>'
+            unit['processInfor'] = processInfor
+        elif (project.pState.paramID == 16):
+            processInfor = '<p>完成FAT验收，请客户交付中期货款</p>'
+            unit['processInfor'] = processInfor
+
+        pro_contract_processInfor.append(unit)
+    return  render(request,'bidHelp/ExerciseAgreement/adminProductConvey.html',{'pro_contract_processInfor':pro_contract_processInfor})
 
 
+def uploadAcceptenceDoc(request,conID):
+    contract = bidHelp.models.Contract.objects.get(contractID=conID)
+    try:
+        if(contract.state.paramID == 15):
+            file = request.FILES.get("FATDoc")
+            f = zipfile.ZipFile(file, mode="w", compression=zipfile.ZIP_DEFLATED, allowZip64=False)
+            zipfilename = contract.pID.pName+'_FAT验收文件.zip'
+            contract.FATDoc = zipfilename
+            with open('upload/' + zipfilename, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+                destination.close()
+        else:
+            file = request.FILES.get("SATDoc")
+            f = zipfile.ZipFile(file, mode="w", compression=zipfile.ZIP_DEFLATED, allowZip64=False)
+            zipfilename = contract.pID.pName+'_SAT验收文件.zip'
+            contract.SATDoc = zipfilename
+            with open('upload/' + zipfilename, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+                destination.close()
+
+        changeState = bidHelp.models.StateParam.objects.get(paramID=contract.state.paramID + 1)
+        contract.state = changeState
+        contract.pID.pState = changeState
+        contract.save()
+        contract.pID.save()
+        bidHelp.models.ProjectProccess.objects.create(pID=contract.pID, proccess=changeState,
+                                                      time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        return HttpResponseRedirect('/adminProductConvey')
+    except Exception:
+        return HttpResponseRedirect('/adminProductConvey')#考虑报错
+
+def adminWarning(request):
+    projects = bidHelp.models.Project.objects.exclude(pState__paramID__in =[20,21])
+    pro_alarmKind_predate_date= []
+    for project in projects:
+        unit={}
+        unit['project'] = project
+        if(project.pState_id < 5 or project.pState_id==23):
+            pre_bidOpenTime = bidHelp.models.BidRequest.objects.get(pID__pID=project.pID,rName='开标时间').rContent
+            pre_bidOpenTime = datetime.datetime.strptime(pre_bidOpenTime, "%Y-%m-%d")
+            delta = (pre_bidOpenTime - datetime.datetime.now()).days
+            unit['predate'] = pre_bidOpenTime
+            if(delta>0 and delta<3):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=1)
+                unit['date'] = delta
+            elif(delta<0):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=11)
+                unit['date'] = abs(delta)
+
+            if (unit['date']>0):
+                pro_alarmKind_predate_date.append(unit)
+
+        elif(project.pState_id>=5 and project.pState_id<14 and bidHelp.fastGetter.getBidResultByPID(project.pID).isWin==True):
+            contract = bidHelp.fastGetter.getContractByPID(project.pID)
+            signTime = contract.signTime
+            if(signTime!=""):
+                timeSpan= datetime.timedelta(days=contract.firTimeSpan)
+                pre_firstPriceDate = signTime+timeSpan
+                unit['predate'] = pre_firstPriceDate
+                delta = pre_firstPriceDate - datetime.datetime.now()
+                if (delta > 0 and delta < 3):
+                    unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=2)
+                    unit['date'] = delta
+                elif (delta < 0):
+                    unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=12)
+                    unit['date'] = abs(delta)
+
+                if (unit['date'] > 0):
+                    pro_alarmKind_predate_date.append(unit)
+
+        elif (project.pState_id == 14):
+            contract = bidHelp.fastGetter.getContractByPID(project.pID)
+            timeSpan = datetime.timedelta(days=contract.productTime)
+            pre_FATTime=bidHelp.models.ProjectProccess.objects.get(pID__pID=project.id,proccess__paramID=14).time+timeSpan
+            unit['predate'] = pre_FATTime
+            delta = pre_FATTime - datetime.datetime.now()
+            if (delta > 0 and delta < 3):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=3)
+                unit['date'] = delta
+            elif (delta < 0):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=13)
+                unit['date'] = abs(delta)
+
+            if (unit['date']>0):
+                pro_alarmKind_predate_date.append(unit)
+
+        elif(project.pState_id==16):
+            contract = bidHelp.fastGetter.getContractByPID(project.pID)
+            timeSpan = datetime.timedelta(days=contract.secTimeSpan)
+            pre_secPriceDate = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.id,
+                                                                     proccess__paramID=16).time + timeSpan
+            unit['predate'] = pre_secPriceDate
+            delta = pre_secPriceDate - datetime.datetime.now()
+            if (delta > 0 and delta < 3):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=4)
+                unit['date'] = delta
+            elif (delta < 0):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=14)
+                unit['date'] = abs(delta)
+
+            if (unit['date']>0):
+                pro_alarmKind_predate_date.append(unit)
+
+        elif(project.pState_id==17):
+            contract = bidHelp.fastGetter.getContractByPID(project.pID)
+            timeSpan = datetime.timedelta(days=contract.conveyTime)
+            pre_SATTime = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.id,
+                                                                          proccess__paramID=17).time + timeSpan
+            unit['predate'] = pre_SATTime
+            delta = pre_SATTime - datetime.datetime.now()
+            if (delta > 0 and delta < 3):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=5)
+                unit['date'] = delta
+            elif (delta < 0):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=15)
+                unit['date'] = abs(delta)
+
+            if (unit['date']>0):
+                pro_alarmKind_predate_date.append(unit)
+
+        elif(project.pState_id==19):
+            contract = bidHelp.fastGetter.getContractByPID(project.pID)
+            timeSpan = datetime.timedelta(days=contract.thrTimeSpan)
+            pre_thrPriceDate = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.id,
+                                                                          proccess__paramID=19).time + timeSpan
+            unit['predate'] = pre_thrPriceDate
+            delta = pre_thrPriceDate - datetime.datetime.now()
+            if (delta > 0 and delta < 3):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=6)
+                unit['date'] = delta
+            elif (delta < 0):
+                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=16)
+                unit['date'] = abs(delta)
+
+            if (unit['date']>0):
+                pro_alarmKind_predate_date.append(unit)
+    return render(request,'bidHelp/ExerciseAgreement/alarmPage.html',{'pro_alarmKind_predate_date':pro_alarmKind_predate_date})
+
+def overProject(request,pID):
+    project  = bidHelp.models.Project.objects.get(pID=pID)
+    changeState = bidHelp.models.StateParam.objects.get(paramID=21)
+    contract = bidHelp.fastGetter.getContractByPID(pID)
+    contract.state = changeState
+    project.pState = changeState
+    project.save()
+    contract.save()
+    return HttpResponseRedirect('/index')
+
+def breakUpProject(request,pID):
+    project  = bidHelp.models.Project.objects.get(pID=pID)
+    changeState = bidHelp.models.StateParam.objects.get(paramID=24)
+    project.pState = changeState
+    project.save()
+    try:
+        if bidHelp.fastGetter.getContractByPID(pID):
+            bidHelp.fastGetter.getContractByPID(pID).state=changeState
+            bidHelp.fastGetter.getContractByPID(pID).save()
+    except Exception:
+        print('无合同')
+    return HttpResponseRedirect('/index')
 
 
 

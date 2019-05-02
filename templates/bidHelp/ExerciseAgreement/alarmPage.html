@@ -1,0 +1,73 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>收款进度管理</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-align-justify"></i>履约预警
+        </div>
+        <div class="card-block">
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>项目名称(点击名称查看项目要求)</th>
+                        <th>所属客户</th>
+                        <th>预警类型</th>
+                        <th>预期时限</th>
+                        <th>自由天数/逾期天数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for unit in pro_alarmKind_predate_date %}
+                    <tr>
+                        {% if unit.alarmKind.apID < 10 %}
+                            <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ unit.project.pID }}">{{ unit.project.pName }}</a></td>
+                            <td>{{ unit.project.inviteID.cID.cName }}</td>
+                            <td><span class="badge badge-warning">临期预警</span></td>
+                            {% if unit.alarmKind.apID == 1 %}
+                                <td>请注意，预计开标日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请抓紧时间审批标书文件</td>
+                            {% elif unit.alarmKind.apID == 2 %}
+                                 <td>请注意，首期货款应付日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请跟进客户付款</td>
+                            {% elif unit.alarmKind.apID == 3 %}
+                                 <td>请注意，FAT预计日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请督促生产</td>
+                            {% elif unit.alarmKind.apID == 4 %}
+                                 <td>请注意，中期货款应付日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请跟进客户付款</td>
+                             {% elif unit.alarmKind.apID == 5 %}
+                                 <td>请注意，SAT预计日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请督促运输安装</td>
+                            {% elif unit.alarmKind.apID == 6 %}
+                                 <td>请注意，尾款应付日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}},请跟进客户付款</td>
+                            {% endif %}
+                            <td>{{ unit.date }}</td>
+                        {% endif %}
+                        {% if unit.alarmKind.apID > 10 %}
+                            <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ unit.project.pID }}">{{ unit.project.pName }}</a></td>
+                            <td>{{ unit.project.inviteID.cID.cName }}</td>
+                            <td><span class="badge badge-danger">超期预警</span></td>
+                            {% if unit.alarmKind.apID == 11 %}
+                                 <td>请注意，预计开标日期为：<span style="color: red">{{ unit.predate|date:'Y-m-d'}}</span>,您已超期</td>
+                            {% elif unit.alarmKind.apID == 12 %}
+                                 <td>请注意，首期货款应付日期为：<span style="color: red">{{ unit.predate|date:'Y-m-d'}}</span>,您已超期</td>
+                            {% elif unit.alarmKind.apID == 13 %}
+                                 <td>请注意，FAT预计日期为：<span style="color: red">{{ unit.predate|date:'Y-m-d'}}</span>,您已超期</td>
+                            {% elif unit.alarmKind.apID == 14 %}
+                                 <td>请注意，中期货款应付日期为：<span style="color: red">{{ unit.predate|date:'Y-m-d'}}</span>,您已超期</td>
+                             {% elif unit.alarmKind.apID == 15 %}
+                                 <td>请注意，SAT预计日期为：<span style="color: red">{{ unit.predate|date:'Y-m-d'}}</span>,您已超期</td>
+                            {% elif unit.alarmKind.apID == 16 %}
+                                 <td>请注意，尾款应付日期为：<span style="color: red">{{ unit.predate|date:'Y-m-d'}}</span>,您已超期</td>
+                            {% endif %}
+                            <td>{{ unit.date }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+          </table>
+        </div>
+    </div>
+</div>
+<!--/.col-->
+</div>
+{%endblock%}

@@ -1,0 +1,67 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>收款进度管理</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row" style="margin-top: 40px">
+<div class="col-lg-12">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-align-justify"></i>未完项目生产运输时限
+        </div>
+        <div class="card-block">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>项目名称(点击名称查看项目要求)</th>
+                        <th>所属客户</th>
+                        <th>目前进度</th>
+                        <th>操作</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for unit in pro_contract_processInfor %}
+                    <tr>
+                        <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ unit.pro.pID }}">{{ unit.pro.pName }}</a></td>
+                        <td>{{ unit.pro.inviteID.cID.cName }}</td>
+                        <td>{{ unit.processInfor | safe}}</td>
+                        <td>
+                            {% if unit.pro.pState.paramID == 14 %}
+                             <button class="btn btn-outline-success btn-sm" type="button" id="Btn3" onclick="reciveMoney({{ unit.contract.contractID }})">完成生产，申请FAT验收</button>
+                            {% elif unit.pro.pState.paramID == 17 %}
+                             <button class="btn btn-outline-success btn-sm" type="button" id="Btn4" onclick="reciveMoney({{ unit.contract.contractID }})">完成运输安装，申请SAT验收</button>
+                            {% elif unit.pro.pState.paramID == 15 %}
+                                <form id="form1" enctype="multipart/form-data" method="post" action="http://127.0.0.1:8000/uploadAcceptenceDoc/{{ unit.contract.contractID }}">
+                                     <input name="FATDoc" type="file"/>
+                                     <button class="btn btn-outline-success btn-sm" type="submit" id= "button1">上传FAT验收文件</button>
+                                </form>
+                            {% elif unit.pro.pState.paramID == 18%}
+                                <form id="form2" enctype="multipart/form-data" method="post" action="http://127.0.0.1:8000/uploadAcceptenceDoc/{{ unit.contract.contractID }}">
+                                     <input name="SATDoc" type="file"/>
+                                     <button class="btn btn-outline-success btn-sm" type="submit" id= "button1">上传SAT验收文件</button>
+                                </form>
+                            {% else %}
+                               <p>等待客户付款</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+          </table>
+        </div>
+    </div>
+</div>
+<!--/.col-->
+</div>
+{%endblock%}
+{% block extraCSS %}
+<script type="text/javascript">
+        function reciveMoney(conID){
+            var a = confirm("确认开始申请验收流程？");
+            if (a){
+            window.location.href = 'http://127.0.0.1:8000/reciveMoney/'+ conID+'/t2';
+            }
+        }
+</script>
+{% endblock extraCSS %}

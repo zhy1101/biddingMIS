@@ -12,4 +12,7 @@ def getContractByPID(pID):
     contract = bidHelp.models.Contract.objects.get(pID__pID=pID)
     return contract
 
+def getBidResultByPID(PID):
+    bidResult = bidHelp.models.BidResult.objects.get(pID__pID=PID)
+    return  bidResult
 
