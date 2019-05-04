@@ -8,28 +8,60 @@
 <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                客户分布图
-                <div class="card-actions">
-                    <a href="">
-                        <small class="text-muted">完整列表</small>
-                    </a>
-                </div>
+                客户分布散点图
             </div>
             <div class="card-block" style="height:500px">
-                <!--<div class="chart-wrapper">-->
-                    <div id="china-map" style="width:80%;height:450px;left:0;top:0;"></div>
-                      <!--<canvas id="canvas-1"></canvas>-->
-                <!--</div>-->
+               <div class="chart-wrapper">
+                    <div id="china-map" style="height:450px;left:0;top:0;"></div>
+                </div>
             </div>
         </div>
 </div>
+</div>
+<div class = "row">
+<div class="col-lg-6">
+    <div class="card">
+        <div class="card-header">客户省份统计</div>
+        <div class="card-block">
+            <div class="chart-wrapper">
+                <div id="chart1" style="height:450px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-6">
+    <div class="card">
+        <div class="card-header">客户列表</div>
+        <div class="card-block">
+            <div class="chart-wrapper">
+              <form method="POST" action="http://127.0.0.1:8000/checkCustomer">
+                    <div class="form-group row">
+                        <label class="col-md-3 form-control-label" for="multiple-select">选择客户</label>
+                        <div class="col-md-9">
+                            <select class="form-control" id="multiple-select" size="12" name="cID">
+                                {% for customer in customers %}
+                                    <option value="{{ customer.cID }}">{{ customer.cName }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row" style="float: right">
+                        <button class="btn btn-sm btn-primary" type="submit" ><i class="fa fa-dot-circle-o"></i> 查询客户信息</button>
+                    </div>
+              </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
 {% endblock mainPanel%}
 {% block extraJS %}
-
     <script src="/static/bidHelp/assets/js/libs/china.js"></script>
     <script>
     var myChart = echarts.init(document.getElementById('china-map'));
-   var geoCoordMap = {
+    var chart1 = echarts.init(document.getElementById('chart1'));
+    var geoCoordMap = {
     '上海':[121.45,31.22],
     '乳源':[113.27,24.77],
     '昆明':[102.82,24.88],
@@ -116,7 +148,7 @@
     '台州':[121.26,28.64]};
 
     // 地图散点图数据
-    var data = [
+    var data1 = [
      {name: '上海', value: 24}, {name: '乳源', value: 1}, {name: '昆明', value: 3},{name:'梅河口',value:1 },
      {name: '呼和浩特',value: 1}, {name: '北京', value: 30}, {name: '永吉', value:1},{name: '辉南', value:1},
      {name: '辽源', value:1},{name: '通化', value:2},{name: '长春', value:7},{name: '成都', value:16},
@@ -199,7 +231,7 @@
                 type: 'scatter',
                 coordinateSystem: 'geo',
                 symbolSize: function (data) {return data[2]},
-                data: convertData(data),
+                data: convertData(data1),
                 label: {
                     normal: {
                         show: false
@@ -218,7 +250,7 @@
             {
                 type: 'effectScatter',
                 coordinateSystem: 'geo',
-                data: convertData(data),
+                data: convertData(data1),
                 symbolSize:8,
                 showEffectOn: 'emphasis',
                 rippleEffect: {
@@ -243,7 +275,95 @@
             },
         ]
     }
-
     myChart.setOption(option);
+
+    option1 = {
+       backgroundColor: '#2c343c',
+       title: {
+            text: '客户分布省份统计',
+            x: 'left'
+        },
+     tooltip : {
+        trigger: 'item',
+        formatter: "{a} <br/>{b} : {c} ({d}%)"
+    },
+
+    visualMap: {
+        show: false,
+        min: 0,
+        max: 50,
+        inRange: {
+            colorLightness: [0, 1]
+        }
+    },
+    series : [
+        {
+            name:'客户来源区域',
+            type:'pie',
+            radius : '55%',
+            center: ['50%', '50%'],
+            data:[
+               {name:'海南', value:5},
+                {name:'甘肃', value:2},
+                {name:'贵州', value:2},
+                {name:'云南', value:3},
+                {name:'重庆', value:7},
+                {name:'吉林', value:13},
+                {name:'山西', value:2},
+                {name:'天津', value:10},
+                {name:'江西', value:3},
+                {name:'广西', value:1},
+                {name:'陕西', value:4},
+                {name:'黑龙江', value:3},
+                {name:'内蒙古', value:1},
+                {name:'安徽', value:6},
+                {name:'北京', value:29},
+                {name:'福建', value:2},
+                {name:'上海', value:23},
+                {name:'湖北', value:6},
+                {name:'四川', value:17},
+                {name:'辽宁', value:8},
+                {name:'河北', value:12},
+                {name:'河南', value:2},
+                {name:'浙江', value:27},
+                {name:'山东', value:21},
+                {name:'江苏', value:45},
+                {name:'广东', value:30}
+            ].sort(function (a, b) { return a.value - b.value; }),
+        roseType: 'radius',
+        label: {
+                normal: {
+                    textStyle: {
+                        color: 'rgba(255, 255, 255, 0.3)'
+                    }
+                }
+            },
+            labelLine: {
+                normal: {
+                    lineStyle: {
+                        color: 'rgba(255, 255, 255, 0.3)'
+                    },
+                    smooth: 0.2,
+                    length: 10,
+                    length2: 20
+                }
+            },
+            itemStyle: {
+                normal: {
+                    color: '#c23531',
+                    shadowBlur: 200,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            },
+
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDelay: function (idx) {
+                return Math.random() * 200;
+            }
+        }
+    ]
+};
+    chart1.setOption(option1, true);
 </script>
 {% endblock extraJS %}

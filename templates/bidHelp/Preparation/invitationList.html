@@ -1,4 +1,7 @@
 {% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>邀约管理</title>
+{% endblock pageTitle%}
 {% block mainPanel %}
     <div class = "row" style="margin-top: 30px">
         <div class = "col-lg-10">
@@ -22,7 +25,7 @@
                 </div>
                 {% endfor %}
                 {% else %}
-                    <p>无待应答邀约</p>
+                    <div style="text-align: center"><p>无待应答邀约</p></div>
                 {% endif %}
             </div>
         </div>
@@ -36,7 +39,7 @@
                      <strong>已应答未建组邀约（请尽快建组，进行投标作业）</strong>
                 </div>
                 {% if not projectToCreate %}
-                    <p>无未处理邀约</p>
+                    <div style="text-align: center"><p>无未处理邀约</p></div>
                 {% else %}
                 {% for project in projectToCreate %}
                 <div class="card-block">

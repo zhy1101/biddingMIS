@@ -1,64 +1,254 @@
 <!DOCTYPE html>
-<html >
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- <link rel="shortcut icon" href="assets/ico/favicon.png"> -->
-    <title>{{ project.pName }}-需求查看</title>
-    <!-- Icons -->
-    <link href="/static/bidHelp/css/font-awesome.min.css" rel="stylesheet">
-    <link href="/static/bidHelp/css/simple-line-icons.css" rel="stylesheet">
-    <!-- Main styles for this application -->
-    <link href="/static/bidHelp/css/style.css" rel="stylesheet">
+<html lang="en">
+    <head>
+        <title> 项目详情查看 </title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/static/bidHelp/proInforPage/css/modernforms.css">
+        <link rel="stylesheet" href="/static/bidHelp/proInforPage/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/static/bidHelp/proInforPage/css/theme-blue.css">
+        <link href="/static/bidHelp/css/simple-line-icons.css" rel="stylesheet">
+    </head>
+    <body class="mdn-bg">
+        <div class="modern-forms">
+        	<div class="modern-container">
+                <form>
+                    <fieldset>
+                        <div class="form-row">
+                            <div class="col col-6">
+                                <div class="field-group">
+                                    <input type="text" class="mdn-input" readonly value="{{ project.pName }}">
+                                    <label class="mdn-label">项目名称</label>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                            <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ project.inviteID.cID.cName }}">
+                                    <label class="mdn-label">客户名称</label>
+                                    <span class="mdn-icon"><i class="icon-user "></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                        </div><!-- end form-row -->
+                        <div class="form-row">
+                            <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ project.aimDevice.deviceID}}">
+                                    <label class="mdn-label">目标机型</label>
+                                    <span class="mdn-icon"><i class="icon-printer "></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                            <div class="col col-6">
+                                <div class="field-group">
+                                    <input type="text" class="mdn-input" readonly value="{{ project.quantity}}">
+                                    <label class="mdn-label">采购数量</label>
+                                    <span class="mdn-bar"></span>
+                                    <span class="mdn-msg right msg-hidden">单位：台/套</span>
+                                </div>
+                            </div><!-- end col-6 -->
+                        </div><!-- end form-row -->
+                        <div class="form-row">
+                            <div class="col col-6">
+                                <div class="field-group">
+                                    <input type="search" class="mdn-input" readonly value="{{ bidTime}}">
+                                    <label class="mdn-label">开标时间</label>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                            <div class="col col-6">
+                                <div class="field-group">
+                                    <input type="tel" class="mdn-input" readonly value="{{ bidPlace}}">
+                                    <label class="mdn-label">开标地点</label>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                        </div><!-- end form-row -->
 
-</head>
+                        <div class="form-row">
+                            <div class="col col-6">
+                                <div class="field-group">
+                                    <input type="text" class="mdn-input" readonly value="{{ sp_BS.staff.uName}}&nbsp;&nbsp;&nbsp;TEL:{{ sp_BS.staff.uPhone }}">
+                                    <label class="mdn-label">项目商务支持</label>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                            <div class="col col-6">
+                                <div class="field-group">
+                                    <input type="text" class="mdn-input" readonly value="{{ sp_TS.staff.uName}}&nbsp;&nbsp;&nbsp;TEL:{{ sp_TS.staff.uPhone }}">
+                                    <label class="mdn-label">项目技术支持</label>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                        </div><!-- end form-row -->
 
-<body class="app flex-row align-items-center">
-    <div class="container">
-        <div class="row justify-content-center"><h4>{{ project.pName }}</h4></div>
-        <div class="row justify-content-center">
-            <div class="col-md-10 mb-6">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#home3" role="tab" aria-controls="home"><i class="icon-notebook"></i>基本信息</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#profile3" role="tab" aria-controls="profile"><i class="icon-wrench "></i>人员/设备</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#messages3" role="tab" aria-controls="messages"><i class="icon-options"></i>其他</a>
-                </li>
-            </ul>
+                        <div class="form-row">
+                            <div class="col col-6">
+                                <div class="field-group">
+                                    <input type="text" class="mdn-input" readonly value="{{ sp_SS.staff.uName}}&nbsp;&nbsp;&nbsp;TEL:{{ sp_SS.staff.uPhone }}">
+                                    <label class="mdn-label">项目外派销售</label>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                        </div><!-- end form-row -->
+                        <div class="form-row">
+                            <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    {% if isPost == 'Y' %}
+                                    <input type="text" class="mdn-input" readonly value="需要邮寄纸质版">
+                                    {% else %}
+                                    <input type="text" class="mdn-input" readonly value="无需邮寄，直接递交电子版">
+                                    {% endif %}
+                                    <label class="mdn-label">是否邮寄 </label>
+                                    <span class="mdn-icon"><i class="icon-envelope-open "></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div>
+                            <div class="col col-6">
+                                <div class="field-group">
+                                    <input type="text" class="mdn-input" readonly value="{{ docNum }}">
+                                    <label class="mdn-label">份数要求</label>
+                                    <span class="mdn-msg right msg-hidden">针对纸质版标书</span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                        </div><!-- end form-row -->
+                        <div class="form-row">
+                            <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ guaMon }}">
+                                    <label class="mdn-label">保证金金额</label>
+                                    <span class="mdn-icon"><i class="icon-diamond "></i></span>
+                                    <span class="mdn-msg right">单位：RMB</span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                            {% if project.pState.paramID >= 5 %}
+                                <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ project.bidPrice }}">
+                                    <label class="mdn-label">我方投标价格</label>
+                                    <span class="mdn-icon"><i class="icon-note "></i></span>
+                                    <span class="mdn-msg right">单位：RMB</span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                                </div>
+                            {% endif %}
+                        </div><!-- end form-row -->
+                    </fieldset>
 
-            <div class="tab-content">
-                <div class="tab-pane active" id="home3" role="tabpanel">
-                    <p>项目名称 :{{ project.pName }}</p>
-                    <p>开始时间 :{{ project.startTime }}</p>
-                    <p>目前进度 :{{ project.pState.paramContent }}</p>
-                </div>
-                <div class="tab-pane" id="profile3" role="tabpanel">
-                    <p>技术支持：{{ sp_TS.staff.uName }}&nbsp;&nbsp;&nbsp;&nbsp;联系方式：{{ sp_TS.staff.uPhone }}</p>
-                    <p>项目商务支持：{{ sp_BS.staff.uName }}&nbsp;&nbsp;&nbsp;&nbsp;联系方式：{{ sp_BS.staff.uPhone }}</p>
-                    <p>项目外派销售：{{ sp_SS.staff.uName }}&nbsp;&nbsp;&nbsp;&nbsp;联系方式：{{ sp_SS.staff.uPhone }}</p>
-                    <hr/>
-                    <p>项目目标机型：{{ project.aimDevice.deviceID }}-{{ project.aimDevice.deviceName }}</p>
-                    <p>简介：{{ project.aimDevice.functionWord }}</p>
-                </div>
-                <div class="tab-pane" id="messages3" role="tabpanel">
-                   {% for req in reqs %}
-                       <p>{{ req.rName }} : {{ req.rContent }}</p>
-                   {% endfor %}
-                </div>
-            </div>
-        </div>
-        </div>
-    </div>
-    </div>
-    <!-- Bootstrap and necessary plugins -->
-	<script src="/static/bidHelp/assets/js/libs/jquery.min.js"></script>
-	<script src="/static/bidHelp/assets/js/libs/tether.min.js"></script>
-	<script src="/static/bidHelp/assets/js/libs/bootstrap.min.js"></script>
+                    <fieldset>
+                        <div class="field-group">
+                            <textarea class="mdn-textarea" readonly>{{ detail }}</textarea>
+                            <label class="mdn-label">详细要求</label>
+                            <span class="mdn-bar"></span>
+                        </div><!-- end mdn-group -->
+                        <div class="field-group mdn-select-multiple">
+                            <select  name="multiselect" multiple="multiple">
+                                {% for process in processList %}
+                                <option value="{{ process.id }}">{{ process.proccess.paramContent }}&nbsp;&nbsp;&nbsp;{{ process.time | date:'Y-m-d' }}</option>
+                                {% endfor %}
+                            </select>
+                            <label class="mdn-label">项目进度轴</label>
+                            <span class="mdn-bar"></span>
+                        </div><!-- end mdn-group -->
+                    </fieldset>
 
-</body>
+                {% if project.pState.paramID > 7 %}
+                    <fieldset>
+                        <div class="mdn-section">
+                            <div class="form-row">
+                                <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    {% if bidResult.isWin %}
+                                    <input type="text" class="mdn-input" readonly value="恭喜，项目中标">
+                                    {% else %}
+                                    <input type="text" class="mdn-input" readonly value="抱歉，项目失标">
+                                    {% endif %}
+                                    <label class="mdn-label">是否中标</label>
+                                    <span class="mdn-icon"><i class="icon-badge "></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                                </div>
+                                <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ bidResult.winPrice }}">
+                                    <label class="mdn-label">中标价格</label>
+                                    <span class="mdn-icon"><i class="icon-trophy"></i></span>
+                                    <span class="mdn-msg right">单位：RMB</span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                                </div><!-- end col-6 -->
+                            </div>
+                            {% if not bidResult.isWin%}
+                             <div class="form-row">
+                                <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ bidResult.lostReason }}">
+                                    <label class="mdn-label">失标原因</label>
+                                    <span class="mdn-icon"><i class="icon-question "></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                                </div>
+                             </div>
+                            {% endif %}
+                         </div><!-- end form-row -->
+                    </fieldset>
+                    {% endif %}
+                    {% if project.pState.paramID > 10 %}
+                    <fieldset>
+                        <div class="mdn-section">
+                            <div class="form-row">
+                               <div class="col col-8">
+                                    <div class="field-group prepend-icon">
+                                        <input type="text" class="mdn-input" readonly value="{{ contract.contractPrice }}">
+                                        <label class="mdn-label">合同价格</label>
+                                        <span class="mdn-icon"><i class="icon-tag "></i></span>
+                                        <span class="mdn-msg right">单位：RMB</span>
+                                        <span class="mdn-bar"></span>
+                                    </div>
+                                </div>
+                            </div><!-- end form-row -->
+                            <div class="field-group">
+                            <textarea class="mdn-textarea" readonly>自收到乙方签约合同{{ contract.firTimeSpan }} 天内，交付总成交价的{{ contract.firPartPrice}}% 作为首付款，收到首付款后,{{ contract.productTime}}天内完成生产并开始FAT验收，FAT验收协议签署后{{ contract.secTimeSpan }}天内乙方需交付成交价的{{ contract.secPartPrice }}%作为中期付款，收到中期货款后{{contract.conveyTime }}天内将货物运至乙方工厂完成安装并开始SAT验收，SAT验收协议签署后{{ contract.thrTimeSpan }}天内乙方需将余下的{{ contract.thrPartPrice }}%货款交付甲方账户。
+                            </textarea>
+                            <label class="mdn-label">合同收付要求</label>
+                            <span class="mdn-bar"></span>
+                        </div>
+                        </div>
+                    </fieldset>
+                    {% endif %}
 
+                    <div class="mdn-footer">
+                        <div class="mdn-label-pos block-label"><label class="mdn-label">文件下载区</label></div>
+                        <button type="button" class="mdn-button btn-primary btn-raised" onclick="downlaodfile('XXXX项目招标文件文件（测试）.docx',0)">客户招标文件</button>
+                        {% if project.pState.paramID > 5 %}
+                        <button type="button" class="mdn-button btn-primary btn-raised" onclick=" downlaodfile('{{ project.pID}}',1)">标书文件</button>
+                        {% endif %}
+                        {% if project.pState.paramID > 10 %}
+                        <button type="button" class="mdn-button btn-primary btn-raised" onclick="downlaodfile('{{ contract.contractDocPath }}',0)">合同终稿</button>
+                        {% endif %}
+                        {% if project.pState.paramID > 16 %}
+                        <button type="button" class="mdn-button btn-primary btn-raised" onclick="downlaodfile('{{ contract.FATDoc }}',0)">FAT验收文件</button>
+                        {% endif %}
+                        {% if project.pState.paramID > 19 %}
+                        <button type="button" class="mdn-button btn-primary btn-raised" style="margin-top: 5px" onclick="downlaodfile('{{ contract.SATDoc }}',0)">SAT验收文件</button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div><!-- modern-container -->
+        </div><!-- modern-forms -->
+
+        <script>
+            function downlaodfile(path,arg){
+                if(arg >0 ){
+                location.href= 'http://127.0.0.1:8000/downloadBidDocFile/'+path
+                    }else {
+                  location.href='http://127.0.0.1:8000/downloadFile/'+path
+                }
+            }
+        </script>
+
+    </body>
 </html>

@@ -6,6 +6,7 @@ from django.urls import reverse
 import bidHelp.models
 import bidHelp.Gray_model
 import bidHelp.fastGetter
+import bidHelp.computeRecentBidCondition
 from django.db.models import Q
 from django.core.paginator import Paginator
 import datetime
@@ -58,7 +59,8 @@ def index(request):
     return render(request, 'bidHelp/index.html', {'uKind': user.uKind,'projects_processNum':projects_processNum})
 
 def showCustomerDistribution(request):
-    return render(request, 'bidHelp/Preparation/CustomerList.html')
+    customers = bidHelp.models.Customer.objects.all()
+    return render(request, 'bidHelp/Preparation/CustomerList.html',{'customers':customers})
 
 def toManageInvitation(request):
     invitationSet = bidHelp.models.BidInvitation.objects.exclude(Q(bidResponse='Y') | Q(bidResponse='N'))
@@ -95,7 +97,7 @@ def adminProjectRequest(request,npIndex,rpIndex):
     npIndex = int(npIndex)
     noListProject = np.page(npIndex)
     nplistrange = np.page_range
-    readyProject = bidHelp.models.Project.objects.filter(pState_id__lt=21).order_by("pID")
+    readyProject = bidHelp.models.Project.objects.filter(pState_id__lt=21).exclude(pState_id=8).order_by("pID")
     rp = Paginator(readyProject, 5)
     if rpIndex == '':
         rpIndex = '1'
@@ -164,11 +166,24 @@ def AddProjectRequest(request):
 
 def showProjectRequest(request,pID):
     project = bidHelp.models.Project.objects.get(pID=pID)
+    processList = bidHelp.models.ProjectProccess.objects.filter(pID__pID=pID).order_by('proccess')
     sp_TS = bidHelp.models.Staff_Project.objects.get(job='TS',project_id=pID)
     sp_BS = bidHelp.models.Staff_Project.objects.get(job='BS', project_id=pID)
     sp_SS = bidHelp.models.Staff_Project.objects.get(job='SS', project_id=pID)
-    reqs = bidHelp.models.BidRequest.objects.filter(pID_id=pID)
-    context ={"project":project,"sp_TS":sp_TS,"sp_BS":sp_BS,"sp_SS":sp_SS,"reqs":reqs}
+    bidTime = bidHelp.models.BidRequest.objects.get(pID_id=pID,rName='开标时间').rContent
+    bidPlace = bidHelp.models.BidRequest.objects.get(pID_id=pID, rName='开标地点').rContent
+    isPost = bidHelp.models.BidRequest.objects.get(pID_id=pID, rName='是否邮寄').rContent
+    docNum = bidHelp.models.BidRequest.objects.get(pID_id=pID, rName='份数要求').rContent
+    guaMon = bidHelp.models.BidRequest.objects.get(pID_id=pID, rName='保证金金额').rContent
+    detail = bidHelp.models.BidRequest.objects.get(pID_id=pID, rName='详细要求').rContent
+    context ={"project":project,"sp_TS":sp_TS,"sp_BS":sp_BS,"sp_SS":sp_SS,'bidTime':bidTime,
+              'bidPlace':bidPlace,'isPost':isPost,'docNum':docNum,'guaMon':guaMon,'detail':detail,'processList':processList}
+    if(project.pState_id >= 7):
+        bidResult = bidHelp.models.BidResult.objects.get(pID__pID=pID)
+        context['bidResult'] = bidResult
+    if(project.pState_id>=10):
+        contract = bidHelp.fastGetter.getContractByPID(pID)
+        context['contract'] = contract
     return render(request,'bidHelp/Preparation/showProjectRequest.html',context)
 
 def showBidRequestforST(request,uID):
@@ -191,6 +206,9 @@ def read_file(file_name, size):
                 yield c
             else:
                 break
+
+def finishFastBidDocPage(request,docPath):
+    return render(request,'bidHelp/Bidding/finishFastBidDocPage.html',{'docPath':docPath})
 
 def download_report(request,pID):
     p = bidHelp.models.Project.objects.get(pID=pID)
@@ -223,12 +241,12 @@ def download_report(request,pID):
             img = io.imread(os.path.join(os.getcwd(), 'timg.jpg'))
             io.imsave(os.path.join(filepath,filename), img)
      # time.sleep(10)
-    p.bidDocPath = 'd:\\'+p.pName
+    p.bidDocPath = 'd:/'+p.pName
     state = bidHelp.models.StateParam.objects.get(paramID=2)
     p.pState = state
     p.save()
     process = bidHelp.models.ProjectProccess.objects.create(pID=p,proccess=state,time=datetime.datetime().now().strftime('%Y-%m-%d %H:%M:%S'))
-    return tofastBidDocPage(request)  #最好处理成别的跳转方式
+    return finishFastBidDocPage(request,p.bidDocPath)
 
 
 def toBidPredictPage(request):
@@ -818,8 +836,16 @@ def adminWarning(request):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=1)
                 unit['date'] = delta
             elif(delta<0):
-                unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=11)
+                aKind = bidHelp.models.AiarmParam.objects.get(apID=11)
+                unit['alarmKind'] = aKind
                 unit['date'] = abs(delta)
+                try:
+                    alarm = bidHelp.models.Alarm.objects.get(project__pID=project.pID,aKind__apID=11)
+                    alarm.time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    alarm.exDay = abs(delta)
+                    alarm.save()
+                except:
+                     bidHelp.models.Alarm.objects.create(project =project,time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") ,aKind=aKind,exDay=abs(delta))
 
             if (unit['date']>0):
                 pro_alarmKind_predate_date.append(unit)
@@ -838,6 +864,15 @@ def adminWarning(request):
                 elif (delta < 0):
                     unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=12)
                     unit['date'] = abs(delta)
+                    try:
+                        alarm = bidHelp.models.Alarm.objects.get(project__pID=project.pID, aKind__apID=12)
+                        alarm.time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        alarm.exDay = abs(delta)
+                        alarm.save()
+                    except:
+                        bidHelp.models.Alarm.objects.create(project=project,
+                                                            time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                                            aKind=aKind, exDay=abs(delta))
 
                 if (unit['date'] > 0):
                     pro_alarmKind_predate_date.append(unit)
@@ -854,6 +889,13 @@ def adminWarning(request):
             elif (delta < 0):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=13)
                 unit['date'] = abs(delta)
+                try:
+                    alarm = bidHelp.models.Alarm.objects.get(project__pID=project.pID,aKind__apID=13)
+                    alarm.time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    alarm.exDay = abs(delta)
+                    alarm.save()
+                except:
+                     bidHelp.models.Alarm.objects.create(project =project,time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") ,aKind=aKind,exDay=abs(delta))
 
             if (unit['date']>0):
                 pro_alarmKind_predate_date.append(unit)
@@ -871,6 +913,13 @@ def adminWarning(request):
             elif (delta < 0):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=14)
                 unit['date'] = abs(delta)
+                try:
+                    alarm = bidHelp.models.Alarm.objects.get(project__pID=project.pID,aKind__apID=14)
+                    alarm.time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    alarm.exDay = abs(delta)
+                    alarm.save()
+                except:
+                     bidHelp.models.Alarm.objects.create(project =project,time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") ,aKind=aKind,exDay=abs(delta))
 
             if (unit['date']>0):
                 pro_alarmKind_predate_date.append(unit)
@@ -888,6 +937,15 @@ def adminWarning(request):
             elif (delta < 0):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=15)
                 unit['date'] = abs(delta)
+            try:
+                alarm = bidHelp.models.Alarm.objects.get(project__pID=project.pID, aKind__apID=15)
+                alarm.time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                alarm.exDay = abs(delta)
+                alarm.save()
+            except:
+                bidHelp.models.Alarm.objects.create(project=project,
+                                                    time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                                    aKind=aKind, exDay=abs(delta))
 
             if (unit['date']>0):
                 pro_alarmKind_predate_date.append(unit)
@@ -905,6 +963,13 @@ def adminWarning(request):
             elif (delta < 0):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=16)
                 unit['date'] = abs(delta)
+                try:
+                    alarm = bidHelp.models.Alarm.objects.get(project__pID=project.pID,aKind__apID=16)
+                    alarm.time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    alarm.exDay = abs(delta)
+                    alarm.save()
+                except:
+                     bidHelp.models.Alarm.objects.create(project =project,time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") ,aKind=aKind,exDay=abs(delta))
 
             if (unit['date']>0):
                 pro_alarmKind_predate_date.append(unit)
@@ -932,6 +997,107 @@ def breakUpProject(request,pID):
     except Exception:
         print('无合同')
     return HttpResponseRedirect('/index')
+
+def changeProjectRequest(request,pID):
+    project = bidHelp.models.Project.objects.get(pID = pID)
+    bidTime = bidHelp.models.BidRequest.objects.get(pID__pID=pID,rName='开标时间').rContent
+    bidPlace = bidHelp.models.BidRequest.objects.get(pID__pID=pID,rName='开标地点').rContent
+    bankGuaMoney = bidHelp.models.BidRequest.objects.get(pID__pID=pID,rName='保证金金额').rContent
+    num = bidHelp.models.BidRequest.objects.get(pID__pID=pID, rName='份数要求').rContent
+    detail= bidHelp.models.BidRequest.objects.get(pID__pID=pID, rName='详细要求').rContent
+    isPost = bidHelp.models.BidRequest.objects.get(pID__pID=pID, rName='是否邮寄').rContent
+    SS = bidHelp.models.Staff_Project.objects.get(project__pID=pID,job='SS').staff.id
+    TS = bidHelp.models.Staff_Project.objects.get(project__pID=pID, job='TS').staff.id
+    BS = bidHelp.models.Staff_Project.objects.get(project__pID=pID, job='BS').staff.id
+    deviceList = bidHelp.models.Device.objects.all()
+    SSList = bidHelp.models.User.objects.filter(uKind='SS')
+    ST1List = bidHelp.models.User.objects.filter(uKind='TS')
+    ST2List = bidHelp.models.User.objects.filter(uKind='BS')
+    context = {'project': project, 'bidTime': bidTime, 'bidPlace': bidPlace, 'bankGuaMoney': bankGuaMoney, 'num': num,
+               'detail': detail,'isPost':isPost,'pastSS':SS,'pastTS':TS,'pastBS':BS,'deviceList':deviceList,'SSList':SSList,'ST1List':ST1List,'ST2List':ST2List}
+    return  render(request,'bidHelp/Preparation/AddProjectRequest.html',context)
+
+def showRecentBidCondition(request):
+    context = bidHelp.computeRecentBidCondition.computeBidConditoin()
+    return render(request,'bidHelp/RecentBidCondition/bidCondition.html',context)
+
+
+def get_zip_file(input_path, result):
+    """
+    对目录进行深度优先遍历
+    :param input_path:
+    :param result:
+    :return:
+    """
+    files = os.listdir(input_path)
+    for file in files:
+        if os.path.isdir(input_path + '/' + file):
+            get_zip_file(input_path + '/' + file, result)
+        else:
+            result.append(input_path + '/' + file)
+
+def zip_file_path(input_path, output_path, output_name):
+    """
+    压缩文件
+    :param input_path: 压缩的文件夹路径
+    :param output_path: 解压（输出）的路径
+    :param output_name: 压缩包名称
+    :return:
+    """
+    f = zipfile.ZipFile(output_path + '/' + output_name, 'w', zipfile.ZIP_DEFLATED)
+    filelists = []
+    get_zip_file(input_path, filelists)
+    for file in filelists:
+        f.write(file)
+    # 调用了close方法才会保证完成压缩
+    f.close()
+    return output_path + r"/" + output_name
+
+def downloadBidDocFile(request,pID):
+    pro = bidHelp.models.Project.objects.get(pID=pID)
+    path = pro.bidDocPath
+    outputname = path[3:]+'.zip'
+    zip_file_path(path,'d:',outputname)
+    def file_iterator(file_name, chunk_size=512):
+        with open(file_name, 'rb') as f:
+            if f:
+                yield f.read(chunk_size)
+                print('下载完成')
+            else:
+                print('未完成下载')
+    response = StreamingHttpResponse(file_iterator('D:/'+ outputname))
+    response['Content-Type'] = 'application/x-zip-compressed '
+    response['Content-Disposition'] = 'attachement;filename=标书文件.zip'
+    return response
+
+def checkCustomer(request):
+    cID = request.POST.get('cID')
+    projects = bidHelp.fastGetter.getProjectsBycID(cID)
+    customer = bidHelp.models.Customer.objects.get(cID=cID)
+    alarms = bidHelp.models.Alarm.objects.filter(project__inviteID__cID=cID)
+    context = {'customer':customer,'alarms':alarms}
+    if(len(projects)>0):
+        context['projects'] = projects
+        winBidResults = bidHelp.models.BidResult.objects.filter(pID__inviteID__cID = cID,isWin=True,pID__pState__paramID__gt=10)
+        winNum = len(winBidResults)
+        winRate = '%.2f' %(winNum/len(projects)*100)
+        context['winRate'] = winRate
+        winPros = []
+        for winBidResult in winBidResults:
+            winPros.append(winBidResult.pID)
+        winProNames=[]
+        bidPrice = []
+        contractPrice = []
+        for pro in winPros:
+            winProNames.append(pro.pName)
+            bidPrice.append(pro.bidPrice)
+            contractPrice.append(bidHelp.fastGetter.getContractByPID(pro.pID).contractPrice)
+        context['winProNames'] =winProNames
+        context['bidPrice'] = bidPrice
+        context['contractPrice'] =  contractPrice
+        return render(request,'bidHelp/Preparation/CustomerInforPage.html',context);
+    else:
+        return render(request, 'bidHelp/Preparation/CustomerInforPage.html',context);
 
 
 

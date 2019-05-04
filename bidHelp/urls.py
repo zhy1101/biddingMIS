@@ -44,6 +44,7 @@ urlpatterns =[
     url(r'^uploadContract$', views.uploadContract, name='uploadContract'),
     url(r'^downLoadFirstVersionContract/(?P<conID>[0-9]*)$', views.downLoadFirstVersionContract, name='downLoadFirstVersionContract'),
     url(r'^downloadFile/(?P<path>.+)$', views.downloadFile, name='downloadFile'),
+    url(r'^downloadBidDocFile/(?P<pID>[0-9]*)$', views.downloadBidDocFile, name='downloadBidDocFile'),
     url(r'^toContractCheck$', views.toContractCheck, name='toContractCheck'),
     url(r'^applyForFirstCheck/(?P<conID>[0-9]*)/(?P<finalverID>[0-9]*)/(?P<contractPrice>[0-9]*)/(?P<firTimeSpan>[0-9]*)/(?P<firPartPrice>[0-9]*)/(?P<productTime>[0-9]*)/(?P<secTimeSpan>[0-9]*)/(?P<secPartPrice>[0-9]*)/(?P<conveyTime>[0-9]*)/(?P<thrTimeSpan>[0-9]*)/(?P<thrPartPrice>[0-9]*)$',
         views.applyForFirstCheck, name='applyForFirstCheck'),
@@ -57,6 +58,10 @@ urlpatterns =[
     url(r'^adminWarning$', views.adminWarning, name='adminWarning'),
     url(r'^overProject/(?P<pID>[0-9]*)$', views.overProject, name='overProject'),
     url(r'^breakUpProject/(?P<pID>[0-9]*)$', views.breakUpProject, name='breakUpProject'),
+    url(r'^changeProjectRequest/(?P<pID>[0-9]*)$', views.changeProjectRequest, name='changeProjectRequest'),
+    url(r'^showRecentBidCondition$', views.showRecentBidCondition, name='showRecentBidCondition'),
+    url(r'^checkCustomer$', views.checkCustomer, name='checkCustomer'),
+
 
 
 ]

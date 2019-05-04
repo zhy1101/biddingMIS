@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title> {{ customer.cName }} 信息一览 </title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/static/bidHelp/proInforPage/css/modernforms.css">
+        <link rel="stylesheet" href="/static/bidHelp/proInforPage/css/font-awesome.min.css">
+        <link href="/static/bidHelp/css/simple-line-icons.css" rel="stylesheet">
+    </head>
+    <body class="mdn-bg">
+        <div class="modern-forms">
+        	<div class="modern-container">
+                <form>
+                    <fieldset>
+                        <div class="form-row">
+                            <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ customer.cName }}">
+                                    <label class="mdn-label">客户名称</label>
+                                    <span class="mdn-icon"><i class="icon-user"></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                            <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ customer.cEnglishName }}">
+                                    <label class="mdn-label">英文名称</label>
+                                    <span class="mdn-icon"><i class="icon-options-vertical "></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                        </div><!-- end form-row -->
+                        <div class="form-row">
+                            <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ customer.cAddress }}">
+                                    <label class="mdn-label">客户公司地址</label>
+                                    <span class="mdn-icon"><i class="icon-location-pin "></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                            <div class="col col-6">
+                                <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ customer.cContactPerson }}&nbsp;&nbsp;&nbsp;TEL:{{ customer.cPhone }}">
+                                    <label class="mdn-label">联系方式</label>
+                                    <span class="mdn-icon"><i class="icon-screen-smartphone "></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                        </div><!-- end form-row -->
+                {% if projects  %}
+                        <div class="form-row">
+                            <div class="col col-6">
+                                 <div class="field-group prepend-icon">
+                                    <input type="text" class="mdn-input" readonly value="{{ winRate}}%">
+                                    <label class="mdn-label">平均中标率</label>
+                                    <span class="mdn-icon"><i class="icon-magic-wand  "></i></span>
+                                    <span class="mdn-bar"></span>
+                                </div>
+                            </div><!-- end col-6 -->
+                        </div><!-- end form-row -->
+                    </fieldset>
+
+
+                    <fieldset>
+                        <div class="mdn-section">
+                            <div class="mdn-label-pos block-label"><label class="mdn-label">项目历史 & 警报历史</label></div>
+                            <div class="form-row">
+                                <div class="col col-6">
+                                    <label class="mdn-label">历史项目</label>
+                                    <div class="mdn-group block-group">
+                                        {% for pro in projects %}
+                                        <label class="mdn-switch">
+                                            <ul>
+                                            <li><a href="http://127.0.0.1:8000/showProjectRequest/{{ pro.pID }}">{{ pro.pName }}</a></li>
+                                            </ul>
+                                        </label>
+                                        {% endfor %}
+                                    </div><!-- mdn-group -->
+                                </div><!-- end col-4 -->
+                                <div class="col col-6">
+                                    <label class="mdn-label">逾期警报</label>
+                                    <div class="mdn-group block-group">
+                                        {% for ala in alarms %}
+                                        <label class="mdn-switch">
+                                            {{ forloop.counter }}.{{ ala.project.pName }}&nbsp;&nbsp;&nbsp;{{ ala.aKind.aContent }}&nbsp;&nbsp;&nbsp;逾期：{{ ala.exDay }}天
+                                        </label>
+                                        {% endfor %}
+                                    </div><!-- mdn-group -->
+                                </div><!-- end col-8 -->
+                            </div><!-- end form-row -->
+                        </div>
+                    </fieldset>
+
+                    <div id="chart" style="height: 350px"></div>
+                {% endif %}
+                </form>
+            </div><!-- modern-container -->
+        </div><!-- modern-forms -->
+
+        <script src="static/bidHelp/dist/echarts-all.js"></script>
+        <script>
+            var chart = echarts.init(document.getElementById('chart'));
+            option = {
+    title : {
+        text: '下浮情况',
+    },
+    tooltip : {
+        trigger: 'axis'
+    },
+    legend: {
+        data:['中标价','成交价']
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            mark : {show: false},
+            dataView : {show: false, readOnly: false},
+            magicType : {show: true, type: ['line', 'bar']},
+            restore : {show: true},
+            saveAsImage : {show: true}
+        }
+    },
+    calculable : true,
+    xAxis : [
+        {
+            type : 'category',
+            data : {{ winProNames |safe }},
+            interval:0,
+            rotate:45
+        }
+      ],
+    yAxis : [
+        {
+            type : 'value'
+        }
+    ],
+    series : [
+        {
+            name:'中标价',
+            type:'bar',
+            data:{{ bidPrice }},
+            markPoint : {
+                data : [
+                    {type : 'max', name: '最大值'},
+                    {type : 'min', name: '最小值'}
+                ]
+            },
+            markLine : {
+                data : [
+                    {type : 'average', name: '平均值'}
+                ]
+            }
+        },
+        {
+            name:'成交价',
+            type:'bar',
+            data:{{ contractPrice }},
+            markLine : {
+                data : [
+                    {type : 'average', name : '平均值'}
+                ]
+            }
+        }
+    ]
+};
+            chart.setOption(option);
+        </script>
+    </body>
+</html>

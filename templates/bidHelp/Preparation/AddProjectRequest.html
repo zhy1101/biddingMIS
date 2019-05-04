@@ -15,7 +15,7 @@
 
 <body class="app flex-row align-items-center">
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center" style="margin-top: 20px;">
             <h1>{{ project.inviteID.inviteName }} -- 项目要求</h1>
             <form style="width: 100%" class="row" action="http://127.0.0.1:8000/AddProjectRequest" method="post">
                 <input type="hidden" name="pID" value="{{ project.pID }}">
@@ -33,33 +33,33 @@
                         </div>
                         <div class="input-group mb-1">
                             <span class="input-group-addon">项目名称</span>
-                            <input type="text" class="form-control" name="pName">
+                            <input type="text" class="form-control" name="pName" value="{{ project.pName }}">
                         </div>
                         <div class="input-group mb-1">
                             <span class="input-group-addon">开标时间</input>
                             </span>
-                            <input type="text" class="form-control" placeholder="格式 yyyy-mm-dd" name="bidStartTime">
+                            <input type="text" class="form-control" placeholder="格式 yyyy-mm-dd" name="bidStartTime" value="{{ bidTime }}">
                         </div>
                         <div class="input-group mb-1">
                             <span class="input-group-addon">开标地点</span>
-                            <input type="text" class="form-control" name="bidPlace">
+                            <input type="text" class="form-control" name="bidPlace" value="{{ bidPlace }}">
                         </div>
                         <div class="input-group mb-1">
                             <span class="input-group-addon">保证金金额</span>
-                            <input type="text" class="form-control" name="bankPrice">
+                            <input type="text" class="form-control" name="bankPrice" value="{{ bankGuaMoney }}">
                         </div>
                         <div class="input-group mb-1">
                             <span class="input-group-addon">标书份数要求</span>
-                            <input type="text" class="form-control" placeholder="x正x副" name="numRes">
+                            <input type="text" class="form-control" placeholder="x正x副" name="numRes" value="{{ num }}">
                         </div>
                         <div class="form-group row">
                             <label class="col-md-3 form-control-label">是否邮寄</label>
                         <div class="col-md-9">
                             <label class="radio-inline" for="inline-radio1">
-                                <input type="radio" id="inline-radio1" name="isExpress" value="1">是
+                                <input type="radio" id="inline-radio1" name="isExpress" value="1" {% if isPost == 'Y' %}checked="true"{% endif %}>是
                             </label>
                             <label class="radio-inline" for="inline-radio2">
-                                <input type="radio" id="inline-radio2" name="isExpress" value="0">否
+                                <input type="radio" id="inline-radio2" name="isExpress" value="0" {% if isPost == 'N' %}checked="true"{% endif %}>否
                             </label>
                         </div>
                        </div>
@@ -69,14 +69,14 @@
             <div class="col-md-6" style="margin-top: 30px;">
                 <div class="card mx-2">
                     <div class="card-block p-2">
-                        <p class="text-muted">人员信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="">员工信息参考</a></p>
+                        <p class="text-muted">人员信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">员工信息参考</a></p>
                         <div class="form-group row">
-                            <label class="col-md-3 form-control-label" for="select">技术支持</label>
+                            <label class="col-md-3 form-control-label" for="select">项目技术支持</label>
                             <div class="col-md-9">
                                 <select id="select" name="ST1_id" class="form-control">
                                     <option value="0">请选择</option>
                                     {% for ST1 in ST1List %}
-                                    <option value="{{ ST1.id }}">{{ ST1.uName }}</option>
+                                    <option value="{{ ST1.id }}" {% if ST1.id == pastTS %}selected="true"{% endif %}>{{ ST1.uName }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -87,7 +87,7 @@
                                 <select id="select" name="ST2_id" class="form-control">
                                     <option value="0">请选择</option>
                                     {% for ST2 in ST2List %}
-                                    <option value="{{ ST2.id }}">{{ ST2.uName }}</option>
+                                    <option value="{{ ST2.id }}" {% if ST2.id == pastBS %}selected="true"{% endif %}>{{ ST2.uName }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -95,22 +95,22 @@
                         <div class="form-group row">
                             <label class="col-md-3 form-control-label" for="select">外派销售</label>
                             <div class="col-md-9">
-                                <select id="select" name="SS_id" class="form-control">
+                                <select id="SS_id" name="SS_id" class="form-control">
                                     <option value="0">请选择</option>
                                     {% for SS in SSList %}
-                                    <option value="{{ SS.id }}">{{ SS.uName }}</option>
+                                    <option value="{{ SS.id }}" {% if SS.id == pastSS %}selected="true"{% endif %}>{{ SS.uName }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
-                        <p class="text-muted">设备信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="">设备信息参考</a></p>
+                        <p class="text-muted">设备信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">设备信息参考</a></p>
                         <div class="form-group row">
                             <label class="col-md-3 form-control-label" for="select">目标机型</label>
                             <div class="col-md-9">
-                                <select id="select" name="device_id" class="form-control">
+                                <select id="device_id" name="device_id" class="form-control">
                                     <option value="0">请选择</option>
                                     {% for de in deviceList %}
-                                    <option value="{{ de.id }}">{{ de.deviceID }}</option>
+                                    <option value="{{ de.id }}" {% if de.id == project.aimDevice.id %}selected="true"{% endif %}>{{ de.deviceID }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -118,7 +118,7 @@
                         <div class="form-group row">
                             <label class="col-md-3 form-control-label" for="text-input">采购数量</label>
                             <div class="col-md-9">
-                                <input type="text" id="text-input" name="quantity" class="form-control" placeholder="请直接填写数字">
+                                <input type="text" id="text-input" name="quantity" class="form-control" placeholder="请直接填写数字" value="{{ project.quantity }}">
                             </div>
                         </div>
 
@@ -126,11 +126,11 @@
                         <div class="form-group row">
                             <label class="col-md-3 form-control-label" for="textarea-input">详细要求</label>
                             <div class="col-md-9">
-                                <textarea id="textarea-input" name="detail" rows="7" class="form-control" placeholder="请详细罗列注意事项"></textarea>
+                                <textarea id="textarea-input" name="detail" rows="7" class="form-control"  value="{{ detail }}"></textarea>
                             </div>
                         </div>
 
-                        <input type="submit" class="btn btn-block btn-success">确认提交清单</input>
+                        <input type="submit" class="btn btn-block btn-success">
                     </div>
                 </div>
             </div>
@@ -142,7 +142,6 @@
 	<script src="/static/bidHelp/assets/js/libs/jquery.min.js"></script>
 	<script src="/static/bidHelp/assets/js/libs/tether.min.js"></script>
 	<script src="/static/bidHelp/assets/js/libs/bootstrap.min.js"></script>
-
 
 </body>
 

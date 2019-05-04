@@ -1,0 +1,15 @@
+{% extends "bidHelp/blank.html" %}
+{% block pageTitle  %}
+ <title>完成--一键生成标书框架</title>
+{% endblock pageTitle%}
+{% block mainPanel %}
+<div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="clearfix">
+                    <h1 class="float-left display-3 mr-2">恭喜</h1>
+                    <h4 class="pt-1">你已成功生成标书框架!</h4>
+                    <p class="text-muted">请前往以下公盘路径：&nbsp;<span>{{ docPath }}</span>&nbsp;进行后续修改填充</p>
+                </div>
+            </div>
+        </div>
+{% endblock %}

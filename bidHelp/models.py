@@ -151,6 +151,7 @@ class AiarmParam(models.Model):
         db_table = 'bidhelp_aiarmparam'
 
 class Alarm(models.Model):
+    project = models.ForeignKey(Project,on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True,blank=True)
     aKind = models.ForeignKey(AiarmParam,on_delete=models.CASCADE)
     aState = models.CharField(max_length=10,blank=True)

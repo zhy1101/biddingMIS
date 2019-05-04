@@ -13,7 +13,7 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>项目名称</th>
+                        <th>邀约名称</th>
                         <th>预计开标时间</th>
                         <th>招标文件</th>
                         <th>操作</th>
@@ -68,8 +68,8 @@
                     <tr>
                         <td>{{ rpro.pName }}</td>
                         <td>{{ rpro.startTime }}</td>
-                        <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ rpro.pID }}" onclick="window.open(this.href,'_blank',width=200,hight=100,scrollbars=0,resizable=0);return false;">查看</a></td>
-                        <td><a href="">修改</a></td>
+                        <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ rpro.pID }}" target="_blank">查看</a></td>
+                        <td><a href="http://127.0.0.1:8000/changeProjectRequest/{{ rpro.pID }}">修改</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
