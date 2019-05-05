@@ -1,9 +1,9 @@
+#GM灰色预测模型
 from pandas import Series
 from pandas import DataFrame
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-
 class Gray_model:
     def __init__(self):
         self.a_hat = None

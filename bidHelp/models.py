@@ -34,11 +34,11 @@ class BidInvitation(models.Model):
     class Meta:
         managed = True
         db_table = 'bidhelp_bidinvitation'
-
+#定义状态码参数
 class StateParam(models.Model):
-    paramID = models.AutoField(primary_key=True)
-    paramContent = models.CharField(max_length=100,blank=True)
-    remark = models.CharField(max_length=20,blank=True)
+    paramID = models.AutoField(primary_key=True)  #状态码编号
+    paramContent = models.CharField(max_length=100,blank=True)  #状态描述
+    remark = models.CharField(max_length=20,blank=True)  #备注
     class Meta:
         managed = True
         db_table = 'bidhelp_stateparam'

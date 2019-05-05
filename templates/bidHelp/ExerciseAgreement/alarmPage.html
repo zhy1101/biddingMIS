@@ -10,6 +10,16 @@
             <i class="fa fa-align-justify"></i>履约预警
         </div>
         <div class="card-block">
+         <div class="form-group row">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <input type="text" id="searchInfor" class="form-control" placeholder="请输入时间预警范围（单位：天数）">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-primary" id="searchBtn" onclick="searchBR()">警报搜索</button>
+                    </span>
+                </div>
+            </div>
+        </div>
             <table class="table table-bordered table-striped table-condensed">
                 <thead>
                     <tr>
@@ -71,3 +81,15 @@
 <!--/.col-->
 </div>
 {%endblock%}
+{% block extraCSS %}
+    <script>
+        function searchBR() {
+            var serchInfor = document.getElementById('searchInfor').value;
+            if(serchInfor != ""&& serchInfor!=null){
+                window.location.href='http://127.0.0.1:8000/adminWarning/'+serchInfor;
+            }else{
+                alert("天数不能为空！")
+            }
+        }
+    </script>
+{% endblock extraCSS %}
