@@ -61,6 +61,8 @@ urlpatterns =[
     url(r'^changeProjectRequest/(?P<pID>[0-9]*)$', views.changeProjectRequest, name='changeProjectRequest'),
     url(r'^showRecentBidCondition$', views.showRecentBidCondition, name='showRecentBidCondition'),
     url(r'^checkCustomer$', views.checkCustomer, name='checkCustomer'),
+    url(r'^changeProjectRequest_handel$', views.changeProjectRequest_handel, name='changeProjectRequest_handel'),
+
 
 
 

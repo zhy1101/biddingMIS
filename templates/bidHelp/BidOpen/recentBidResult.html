@@ -32,6 +32,7 @@
     <h3>近三日开标结果 >>>></h3>
     <hr/>
 <div class="row">
+    {% if  recentBRSet %}
     {% for BR in recentBRSet %}
         <div class="card" style="margin-left: 20px;margin-top: 20px">
                 <div class="card-header">
@@ -59,6 +60,9 @@
                 {% endif %}
             </div>
     {% endfor %}
+    {% else %}
+        <div style="max-width:1200px;margin:20% auto"><h4>近三日无开标活动</h4></div>
+    {% endif %}
 {% else %}
     <h3>搜索结果 >>>></h3>
     <hr/>

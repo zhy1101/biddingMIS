@@ -17,7 +17,11 @@
     <div class="container">
         <div class="row justify-content-center" style="margin-top: 20px;">
             <h1>{{ project.inviteID.inviteName }} -- 项目要求</h1>
+            {% if changeInfor %}
+            <form style="width: 100%" class="row" action="http://127.0.0.1:8000/changeProjectRequest_handel" method="post">
+            {% else %}
             <form style="width: 100%" class="row" action="http://127.0.0.1:8000/AddProjectRequest" method="post">
+             {% endif %}
                 <input type="hidden" name="pID" value="{{ project.pID }}">
             <div class="col-md-6" style="margin-top: 30px;">
                 <div class="card mx-2">

@@ -21,6 +21,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% if DataSet %}
                     {% for data in DataSet %}
                     <tr>
                         <td><a href="http://127.0.0.1:8000/showProjectRequest/{{ data.project.pID }}">{{ data.project.pName }}</a></td>
@@ -36,6 +37,9 @@
                         {% endif %}
                     </tr>
                     {% endfor %}
+                    {% else %}
+                        <tr><td colspan="5" align="center">暂无等待开标的项目</td></tr>
+                    {% endif %}
                 </tbody>
           </table>
         </div>

@@ -37,7 +37,7 @@
                                 </td>
                                 <td>
                                     {% if unit.processNum == 95%}
-                                        <button class="btn btn-primary" type="button" onclick="overProject({{ unit.pro.pID }})"><i class="fa fa-star"></i>&nbsp; 结束项目</button>
+                                        <button class="btn btn-success" type="button" onclick="window.open('http://127.0.0.1:8000/showProjectRequest/'+{{unit.pro.pID}})"><i class="fa fa-search-plus "></i>&nbsp; 查看项目详情</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="button" onclick="overProject({{ unit.pro.pID }})"><i class="fa fa-star"></i>&nbsp; 结束项目</button>
                                     {% else %}
                                         <button class="btn btn-success" type="button" onclick="window.open('http://127.0.0.1:8000/showProjectRequest/'+{{unit.pro.pID}})"><i class="fa fa-search-plus "></i>&nbsp; 查看项目详情</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button class="btn btn-danger" type="button" onclick="breakUpProject({{ unit.pro.pID }})"><i class="fa fa-exclamation "></i>&nbsp; 意外中止项目</button>
                                     {% endif %}

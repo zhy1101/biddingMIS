@@ -62,7 +62,7 @@ def index(request):
 
 
 def showCustomerDistribution(request):
-    customers = bidHelp.models.Customer.objects.all()
+    customers = bidHelp.models.Customer.objects.all().order_by('cName')
     return render(request, 'bidHelp/Preparation/CustomerList.html', {'customers': customers})
 
 
@@ -132,7 +132,7 @@ def AddProjectRequest(request):
     projectID = request.POST.get('pID')
     project = bidHelp.models.Project.objects.get(pID=projectID)
     project.pName = request.POST.get('pName')
-    project.startTime = datetime.datetime().now().strftime('%Y-%m-%d')
+    project.startTime = datetime.date.today().strftime('%Y-%m-%d')
     project.isGuaratee = 'N'
     device = bidHelp.models.Device.objects.get(id=request.POST.get('device_id'))
     project.aimDevice = device
@@ -152,7 +152,7 @@ def AddProjectRequest(request):
     SS.save()
     # 记录进度信息
     proccess = bidHelp.models.ProjectProccess(pID=project, proccess=state,
-                                              time=datetime.datetime().now().strftime('%Y-%m-%d %H:%M:%S'))
+                                              time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     proccess.save()
     # 记录要求信息
     req1 = bidHelp.models.BidRequest(pID=project, rName="开标时间", rContent=request.POST.get('bidStartTime'))
@@ -172,6 +172,51 @@ def AddProjectRequest(request):
     req5.save()
     req6.save()
     # 返回管理页面
+    return adminProjectRequest(request, 1, 1)
+
+def changeProjectRequest_handel(request):
+    request.encoding = 'utf-8'
+    projectID = request.POST.get('pID')
+    project = bidHelp.models.Project.objects.get(pID=projectID)
+    project.pName = request.POST.get('pName')
+    device = bidHelp.models.Device.objects.get(id=request.POST.get('device_id'))
+    project.aimDevice = device
+    project.quantity = request.POST.get('quantity')
+    project.save()
+    staff_st1 = bidHelp.models.User.objects.get(id=request.POST.get('ST1_id'))
+    staff_st2 = bidHelp.models.User.objects.get(id=request.POST.get('ST2_id'))
+    staff_ss = bidHelp.models.User.objects.get(id=request.POST.get('SS_id'))
+    TS = bidHelp.models.Staff_Project.objects.get(project__pID=projectID, job='TS')
+    TS.staff = staff_st1
+    TS.save()
+    BS = bidHelp.models.Staff_Project.objects.get(project__pID=projectID, job='BS')
+    BS.staff = staff_st2
+    BS.save()
+    SS = bidHelp.models.Staff_Project.objects.get(project__pID=projectID, job='SS')
+    SS.staff = staff_ss
+    SS.save()
+    req1 = bidHelp.models.BidRequest.objects.get(pID__pID=projectID, rName="开标时间")
+    req1.rContent = request.POST.get('bidStartTime')
+    req1.save()
+    req2 = bidHelp.models.BidRequest.objects.get(pID__pID=projectID, rName="开标地点")
+    req2.rContent = request.POST.get('bidPlace')
+    req2.save()
+    req3 = bidHelp.models.BidRequest.objects.get(pID__pID=projectID, rName="保证金金额")
+    req3.rContent =request.POST.get('bankPrice')
+    req3.save()
+    req4 = bidHelp.models.BidRequest.objects.get(pID__pID=projectID, rName="份数要求")
+    req4.rContent = request.POST.get('numRes')
+    req4.save()
+    req5 = bidHelp.models.BidRequest.objects.get(pID__pID=projectID, rName="是否邮寄")
+    if (request.POST.get('isExpress') == 1):
+        req5.rContent='Y'
+    else:
+        req5.rContent = 'N'
+    req5.save()
+    req6 = bidHelp.models.BidRequest.objects.get(pID__pID=projectID, rName="详细要求")
+    req6.rContent = request.POST.get('detail')
+    req6.save()
+
     return adminProjectRequest(request, 1, 1)
 
 
@@ -241,7 +286,7 @@ def download_report(request, pID):
         # 删除生成的报告
     filenames = ['01投标函.docx', '02开标一览表.docx', '03投标分项报价表.docx', '04法人授权书.docx',
                  '05投标人资格证明.docx', '06制造商资格证明.docx', '07售后服务说明.docx', '08营业执照副本.jpg']
-    filepath = 'd:\\' + p.pName + ' ' + datetime.datetime().now().strftime('%Y-%m-%d')
+    filepath = 'd:\\' + p.pName + ' ' + datetime.datetime.now().strftime('%Y-%m-%d')
     if (os.path.exists(filepath)):
         filepath = filepath
     else:
@@ -263,7 +308,7 @@ def download_report(request, pID):
     p.pState = state
     p.save()
     process = bidHelp.models.ProjectProccess.objects.create(pID=p, proccess=state,
-                                                            time=datetime.datetime().now().strftime(
+                                                            time=datetime.datetime.now().strftime(
                                                                 '%Y-%m-%d %H:%M:%S'))
     return finishFastBidDocPage(request, p.bidDocPath)
 
@@ -1130,7 +1175,7 @@ def changeProjectRequest(request, pID):
     ST2List = bidHelp.models.User.objects.filter(uKind='BS')
     context = {'project': project, 'bidTime': bidTime, 'bidPlace': bidPlace, 'bankGuaMoney': bankGuaMoney, 'num': num,
                'detail': detail, 'isPost': isPost, 'pastSS': SS, 'pastTS': TS, 'pastBS': BS, 'deviceList': deviceList,
-               'SSList': SSList, 'ST1List': ST1List, 'ST2List': ST2List}
+               'SSList': SSList, 'ST1List': ST1List, 'ST2List': ST2List,'changeInfor':'Y'}
     return render(request, 'bidHelp/Preparation/AddProjectRequest.html', context)
 
 

@@ -20,6 +20,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% if noDocProjects %}
                     {% for pro in noDocProjects %}
                     <tr>
                         <td>{{ pro.pName }}</td>
@@ -27,6 +28,9 @@
                         <td><a href="http://127.0.0.1:8000/download_report/{{ pro.pID }}">一键生成标书文档</a></td>
                     </tr>
                     {% endfor %}
+                    {% else %}
+                        <tr><td colspan="4" align="center">所有项目均已生成模板标书，请查看项目详情</td></tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>

@@ -20,6 +20,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% if noListProject %}
                     {% for pro in noListProject %}
                     <tr>
                         <td>{{ pro.inviteID.inviteName }}</td>
@@ -28,20 +29,23 @@
                         <td><a href="http://127.0.0.1:8000/posttoAddProjectRequest/{{ pro.pID }}" target="_blank">填写需求</a></td>
                     </tr>
                     {% endfor %}
+                    {% else %}
+                        <tr><td colspan="4" align="center">暂无未填写要求的项目</td></tr>
+                    {% endif %}
                 </tbody>
             </table>
             <ul class="pagination">
-                <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/adminProjectRequest/{{ npIndex |add:-1 }}/1">Prev</a></li>
                 {%for npp in nplistrange%}
                     {%if npp == npIndex%}
                         <li class="page-item active">
                             <a class="page-link" href="#">{{ npIndex }}</a>
                         </li>
                     {%else%}
-                        <li class="page-item"><a class="page-link" href="#">{{ npp }}</a></li>
+                        <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/adminProjectRequest/{{ npp }}/1">{{ npp }}</a></li>
                     {%endif%}
                 {%endfor%}
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/adminProjectRequest/{{ npIndex |add:1 }}/1">Next</a></li>
             </ul>
         </div>
     </div>
@@ -51,7 +55,7 @@
 <div class="col-lg-6">
     <div class="card">
         <div class="card-header">
-            <i class="fa fa-align-justify"></i>历史记录列表
+            <i class="fa fa-align-justify"></i>正在运作中的项目
         </div>
         <div class="card-block">
             <table class="table table-striped">
@@ -64,6 +68,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% if readyProject%}
                     {% for rpro in readyProject %}
                     <tr>
                         <td>{{ rpro.pName }}</td>
@@ -72,20 +77,23 @@
                         <td><a href="http://127.0.0.1:8000/changeProjectRequest/{{ rpro.pID }}">修改</a></td>
                     </tr>
                     {% endfor %}
+                    {% else %}
+                        <tr><td colspan="4" align="center">暂无运作中的项目</td></tr>
+                    {% endif %}
                 </tbody>
             </table>
              <ul class="pagination">
-                <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/adminProjectRequest/1/{{ rpIndex|add:-1 }}">Prev</a></li>
                 {%for rpp in rplistrange%}
                     {%if rpp == rpIndex%}
                         <li class="page-item active">
                             <a class="page-link" href="#">{{ rpIndex }}</a>
                         </li>
                     {%else%}
-                        <li class="page-item"><a class="page-link" href="#">{{ rpp }}</a></li>
+                        <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/adminProjectRequest/1/{{ rpp }}">{{ rpp }}</a></li>
                     {%endif%}
                 {%endfor%}
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/adminProjectRequest/1/{{ rpIndex|add:1 }}">Next</a></li>
             </ul>
         </div>
     </div>
