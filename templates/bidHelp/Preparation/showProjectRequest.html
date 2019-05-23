@@ -229,10 +229,10 @@
                         {% if project.pState.paramID > 10 %}
                         <button type="button" class="mdn-button btn-primary btn-raised" onclick="downlaodfile('{{ contract.contractDocPath }}',0)">合同终稿</button>
                         {% endif %}
-                        {% if project.pState.paramID > 16 %}
+                        {% if project.pState.paramID > 15 %}
                         <button type="button" class="mdn-button btn-primary btn-raised" onclick="downlaodfile('{{ contract.FATDoc }}',0)">FAT验收文件</button>
                         {% endif %}
-                        {% if project.pState.paramID > 19 %}
+                        {% if project.pState.paramID > 18 %}
                         <button type="button" class="mdn-button btn-primary btn-raised" style="margin-top: 5px" onclick="downlaodfile('{{ contract.SATDoc }}',0)">SAT验收文件</button>
                         {% endif %}
                     </div>

@@ -163,7 +163,7 @@
         feature : {
             mark : {show: false},
             dataView : {show: false, readOnly: false},
-            magicType : {show: true, type: ['bar', 'stack', 'tiled']},
+            magicType : {show: true, type: ['line','bar','stack']},
             restore : {show: true},
             saveAsImage : {show: true}
         }
@@ -184,7 +184,7 @@
     series : [
         {
             name:'中标总额',
-            type:'line',
+             type:'line',
             smooth:true,
             itemStyle: {normal: {areaStyle: {type: 'default'}}},
             data:{{ sumBidPrice_Q }}
