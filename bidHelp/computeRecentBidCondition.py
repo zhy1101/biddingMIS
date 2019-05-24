@@ -7,7 +7,7 @@ engine = create_engine('mysql+pymysql://root:zhy2153411@127.0.0.1:3306/bidHelp',
 cnx = engine.raw_connection()
 
 def computeBidConditoin():
-    projects = bidHelp.models.Project.objects.all()
+    projects = bidHelp.models.Project.objects.filter(pState__paramID = 21)
     pIDs=[]
     devicese=[]
     cIDs = []

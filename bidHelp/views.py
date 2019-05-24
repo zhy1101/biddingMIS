@@ -960,12 +960,12 @@ def adminWarning(request,dayarea):
         dayarea = 3
     else:
         dayarea = int(dayarea)
-    projects = bidHelp.models.Project.objects.exclude(pState__paramID__in=[20, 21])
+    projects = bidHelp.models.Project.objects.exclude(pState__paramID__in=[20, 21, 23])
     pro_alarmKind_predate_date = []
     for project in projects:
         unit = {}
         unit['project'] = project
-        if (project.pState_id < 5 or project.pState_id == 23):
+        if (project.pState_id < 5 ):
             pre_bidOpenTime = bidHelp.models.BidRequest.objects.get(pID__pID=project.pID, rName='开标时间').rContent
             pre_bidOpenTime = datetime.datetime.strptime(pre_bidOpenTime, "%Y-%m-%d")
             delta = (pre_bidOpenTime - datetime.datetime.now()).days
