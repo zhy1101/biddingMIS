@@ -16,7 +16,7 @@
                     <p>{{ invite.inviteTime|date:'Y-M-d'}}</p>
                     <span>客户：{{ invite.cID.cName }}</span>
                     <p>邀约内容：{{ invite.inviteContent }}</p>
-                    <span style="color: red">预计开标时间：{{ invite.endTime|date:'Y-M-d' }}&nbsp;&nbsp;&nbsp;截止应答时间：{{ invite.endTime|date:'Y-M-d' }}</span>
+                    <span style="color: red">预计开标时间：{{ invite.preBidTime|date:'Y-M-d' }}&nbsp;&nbsp;&nbsp;截止应答时间：{{ invite.endTime|date:'Y-M-d' }}</span>
                     <p>回复方式：{{ invite.resWay}}</p>
                  <hr/>
                  <button type="button" id="btn-success" class="btn btn-success"

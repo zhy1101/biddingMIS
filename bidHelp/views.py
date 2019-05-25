@@ -34,6 +34,15 @@ def login(request):
     if (user.uPassword == PassWord):
         request.session['uID'] = user.uID
         request.session['uKind'] = user.uKind
+        request.session['uName'] = user.uName
+        if(user.uKind=='PJ'):
+            request.session['job'] = '项目经理'
+        elif(user.uKind=='SS'):
+            request.session['job'] = '外派销售'
+        elif(user.uKind=='GM') :
+            request.session['job'] = '总经理'
+        else:
+            request.session['job'] = '销售支持人员'
         return redirect(reverse('bidHelp:index'))
     else:
         return render(request, 'bidHelp/login.html')
@@ -78,7 +87,7 @@ def toManageInvitation(request):
     return render(request, 'bidHelp/Preparation/invitationList.html', context)
 
 
-def submitInvitation(request, Iid):
+def submitInvitation(request,Iid):
     Iid = request.GET.get('Iid')
     obj = bidHelp.models.BidInvitation.objects.get(inviteID=Iid)
     obj.bidResponse = 'Y'
@@ -89,7 +98,8 @@ def submitInvitation(request, Iid):
     return toManageInvitation(request)
 
 
-def refuseInvitation(request, Iid):
+def refuseInvitation(request,Iid):
+    Iid = request.GET.get('Iid')
     obj = bidHelp.models.BidInvitation.objects.get(inviteID=Iid)
     obj.bidResponse = 'N'
     obj.save()
@@ -245,10 +255,11 @@ def showProjectRequest(request, pID):
 
 
 def showBidRequestforST(request, uID):
-    sps = bidHelp.models.Staff_Project.objects.filter(staff__uID=uID)
-    projects = {}
+    #user = bidHelp.models.User.objects.get(uID=uID)
+    sps = bidHelp.models.Staff_Project.objects.filter(staff__uID = request.session['uID'],project__pState__paramID__lt= 21)
+    projects = []
     for sp in sps:
-        projects[sp.project.id] = sp.project
+        projects.append(sp.project)
     return render(request, 'bidHelp/Bidding/projectRequestListForST.html', {"projects": projects})
 
 
@@ -339,6 +350,8 @@ def handleBidPricePredict(request):
         timeList.append(time)
         past = project.bidPrice / project.quantity
         pastPriceList.append(past)
+    timeList.insert(len(timeList),"now")
+    pastPriceList.insert(len(pastPriceList),pastPriceList[len(pastPriceList)-1])
 
     model = request.GET.get('model')
     if (request.GET.get('alpha')):
@@ -1051,7 +1064,7 @@ def adminWarning(request,dayarea):
         elif (project.pState_id == 16):
             contract = bidHelp.fastGetter.getContractByPID(project.pID)
             timeSpan = datetime.timedelta(days=contract.secTimeSpan)
-            pre_secPriceDate = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.id,
+            pre_secPriceDate = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,
                                                                           proccess__paramID=16).time + timeSpan
             unit['predate'] = pre_secPriceDate
             delta = (pre_secPriceDate - datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days
@@ -1266,3 +1279,12 @@ def checkCustomer(request):
         return render(request, 'bidHelp/Preparation/CustomerInforPage.html', context);
     else:
         return render(request, 'bidHelp/Preparation/CustomerInforPage.html', context);
+
+
+def logout(request):
+    request.session['uID'] = ''
+    request.session['uKind'] = ''
+    request.session['uName'] = ''
+    request.session['job'] = ''
+
+    return postlogin(request)

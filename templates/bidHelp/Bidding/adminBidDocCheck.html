@@ -52,11 +52,14 @@
 <!--/.col-->
 </div>
 {%endblock%}
-{% block extraCSS %}
+{% block extraJS %}
 <script type="text/javascript">
         function apply(pID){
             var bidPrice = document.getElementById("bidPrice").value;
-            window.open = 'http://127.0.0.1:8000/applyBidCheck/' + pID + '/' + bidPrice;
+			var a = confirm("确定申请审批？")
+			if(a){
+			var path = 'http://127.0.0.1:8000/applyBidCheck/' + pID + '/' + bidPrice;
+            window.open(path);}
         }     
 </script>
-{% endblock extraCSS %}
+{% endblock extraJS %}

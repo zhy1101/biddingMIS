@@ -62,8 +62,5 @@ urlpatterns =[
     url(r'^showRecentBidCondition$', views.showRecentBidCondition, name='showRecentBidCondition'),
     url(r'^checkCustomer$', views.checkCustomer, name='checkCustomer'),
     url(r'^changeProjectRequest_handel$', views.changeProjectRequest_handel, name='changeProjectRequest_handel'),
-
-
-
-
+    url(r'^logout$', views.logout, name='logout')
 ]
