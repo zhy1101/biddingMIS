@@ -36,7 +36,7 @@
                         {% endif %}
                     {% else %}
                         {% if p.pState.paramID == 3 %}
-                        <td>完成标书制作，最终报价为：¥ <input type="text" id="bidPrice"><button onclick="apply({{ p.pID }})" >申请审批</button></td>
+                        <td>完成标书制作，最终报价为：¥ <input type="text" id="{{ p.pID }}"><button onclick="apply({{ p.pID }})" >申请审批</button></td>
                         {% endif %}
                         {% if p.pState.paramID == 4 %}
                         <td>正在等待审批</td>
@@ -55,7 +55,7 @@
 {% block extraJS %}
 <script type="text/javascript">
         function apply(pID){
-            var bidPrice = document.getElementById("bidPrice").value;
+            var bidPrice = document.getElementById(pID).value;
 			var a = confirm("确定申请审批？")
 			if(a){
 			var path = 'http://127.0.0.1:8000/applyBidCheck/' + pID + '/' + bidPrice;

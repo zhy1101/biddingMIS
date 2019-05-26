@@ -54,7 +54,7 @@ def index(request):
     user = userSet[0]
     projects_processNum = []
     if (user.uKind == 'PJ' or user.uKind == 'GM'):
-        projrcts = bidHelp.models.Project.objects.filter(pState_id__lt=21)
+        projrcts = bidHelp.models.Project.objects.exclude(Q(pState_id__gte=21) | Q(pState_id=8))
         for pro in projrcts:
             unit = {}
             unit['pro'] = pro
@@ -1012,7 +1012,7 @@ def adminWarning(request,dayarea):
                 timeSpan = datetime.timedelta(days=contract.firTimeSpan)
                 pre_firstPriceDate = signTime + timeSpan
                 unit['predate'] = pre_firstPriceDate
-                delta = (pre_firstPriceDate - datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days
+                delta = (pre_firstPriceDate - datetime.date.today()).days
                 aKind = bidHelp.models.AiarmParam.objects.get(apID=12)
                 if (delta >= 0 and delta < dayarea):
                     unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=2)
@@ -1039,8 +1039,7 @@ def adminWarning(request,dayarea):
             pre_FATTime = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,
                                                                      proccess__paramID=14).time + timeSpan
             unit['predate'] = pre_FATTime
-            delta = (pre_FATTime.replace(tzinfo = None)- datetime.datetime.now()).days
-            print(pre_FATTime.replace(tzinfo = None),datetime.datetime.now(),delta)
+            delta = (pre_FATTime- datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days
             aKind = bidHelp.models.AiarmParam.objects.get(apID=13)
             if (delta >= 0 and delta < dayarea):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=3)
@@ -1154,6 +1153,8 @@ def overProject(request, pID):
     project.pState = changeState
     project.save()
     contract.save()
+    bidHelp.models.ProjectProccess.objects.create(pID=pID, proccess=bidHelp.models.StateParam.objects.get(paramID=21),
+                                                  time=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     return HttpResponseRedirect('/index')
 
 
