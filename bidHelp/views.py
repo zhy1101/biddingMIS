@@ -1039,7 +1039,7 @@ def adminWarning(request,dayarea):
             pre_FATTime = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,
                                                                      proccess__paramID=14).time + timeSpan
             unit['predate'] = pre_FATTime
-            delta = (pre_FATTime- datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days +1
+            delta = (pre_FATTime- datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days
             aKind = bidHelp.models.AiarmParam.objects.get(apID=13)
             if (delta >= 0 and delta < dayarea):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=3)
@@ -1066,7 +1066,7 @@ def adminWarning(request,dayarea):
             pre_secPriceDate = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,
                                                                           proccess__paramID=16).time + timeSpan
             unit['predate'] = pre_secPriceDate
-            delta = (pre_secPriceDate - datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days +1
+            delta = (pre_secPriceDate - datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days
             aKind = bidHelp.models.AiarmParam.objects.get(apID=14)
             if (delta >= 0 and delta < dayarea):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=4)
@@ -1093,7 +1093,7 @@ def adminWarning(request,dayarea):
             pre_SATTime = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,
                                                                      proccess__paramID=17).time + timeSpan
             unit['predate'] = pre_SATTime
-            delta = (pre_SATTime - datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days +1
+            delta = (pre_SATTime - datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days
             aKind = bidHelp.models.AiarmParam.objects.get(apID=15)
             if (delta >= 0 and delta < dayarea):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=5)
@@ -1120,7 +1120,7 @@ def adminWarning(request,dayarea):
             pre_thrPriceDate = bidHelp.models.ProjectProccess.objects.get(pID__pID=project.pID,
                                                                           proccess__paramID=19).time + timeSpan
             unit['predate'] = pre_thrPriceDate
-            delta = (pre_thrPriceDate - datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days +1
+            delta = (pre_thrPriceDate - datetime.datetime.now().replace(tzinfo=pytz.timezone('UTC'))).days
             aKind = bidHelp.models.AiarmParam.objects.get(apID=16)
             if (delta >= 0 and delta < dayarea):
                 unit['alarmKind'] = bidHelp.models.AiarmParam.objects.get(apID=6)
