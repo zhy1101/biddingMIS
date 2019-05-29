@@ -40,15 +40,15 @@
                             {% if unit.alarmKind.apID == 1 %}
                                 <td>请注意，预计开标日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请抓紧时间审批标书文件</td>
                             {% elif unit.alarmKind.apID == 2 %}
-                                 <td>请注意，首期货款应付日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请跟进客户付款</td>
+                                 <td>请注意，首期货款应付截止日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}前</span>,请跟进客户付款</td>
                             {% elif unit.alarmKind.apID == 3 %}
-                                 <td>请注意，FAT预计日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请督促生产</td>
+                                 <td>请注意，FAT预计日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}前</span>,请督促生产</td>
                             {% elif unit.alarmKind.apID == 4 %}
-                                 <td>请注意，中期货款应付日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请跟进客户付款</td>
+                                 <td>请注意，中期货款应付截止日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}前</span>,请跟进客户付款</td>
                              {% elif unit.alarmKind.apID == 5 %}
-                                 <td>请注意，SAT预计日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请督促运输安装</td>
+                                 <td>请注意，SAT预计日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}前</span>,请督促运输安装</td>
                             {% elif unit.alarmKind.apID == 6 %}
-                                 <td>请注意，尾款应付日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}},请跟进客户付款</td>
+                                 <td>请注意，尾款应付截止日期为：<span style="color: #007ee5">{{ unit.predate|date:'Y-m-d'}}</span>,请跟进客户付款</td>
                             {% endif %}
                             <td>{{ unit.date }}</td>
                         {% endif %}
